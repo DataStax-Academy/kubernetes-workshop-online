@@ -4,7 +4,7 @@ We suppose here that you have docker and kubernetes installed
 
 ## A - KIND
 
-- Installation
+- **Installation**
 
 Installation procedure for different OS are detailed here
 https://kind.sigs.k8s.io/docs/user/quick-start/
@@ -18,20 +18,20 @@ brew install kind
 kind get clusters
 ```
 
-***Expected output***
+*Expected output*
 
 ```
 No kind clusters found.
 ```
 
-- Create a KIND cluster 
+- **Create a KIND cluster**
 
 ```bash
 # Apply the configuration (1 master, 5 workers)
 kind create cluster --name kind-cassandra --config ./0-setup-your-cluster/01-kind-config.yaml
 ```
 
-***Expected output***
+*Expected output*
 
 ```
 Creating cluster "kind-cassandra" ...
