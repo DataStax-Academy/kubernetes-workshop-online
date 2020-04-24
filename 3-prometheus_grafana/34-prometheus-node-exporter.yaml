@@ -93,7 +93,7 @@ roleRef:
 subjects:
   - kind: ServiceAccount
     name: example-prometheus-node-exporter
-    namespace: default
+    namespace: cass-operator
 
 ---
 # Source: prometheus-node-exporter/templates/service.yaml

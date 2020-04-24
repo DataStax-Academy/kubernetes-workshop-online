@@ -971,7 +971,15 @@ Events:
 ```
 
 ```yaml
-{"cassandra-yaml":{"authenticator":"org.apache.cassandra.auth.PasswordAuthenticator","authorizer":"org.apache.cassandra.auth.CassandraAuthorizer","commitlog_sync_period_in_ms":11000,"role_manager":"org.apache.cassandra.auth.CassandraRoleManager"},"cluster-info":{"name":"cluster1","seeds":"cluster1-seed-service"},"datacenter-info":{"name":"dc1"},"jvm-options":{"initial_heap_size":"800M","max_heap_size":"800M"}}
+{"cassandra-yaml":
+  {
+    "authenticator":"org.apache.cassandra.auth.PasswordAuthenticator",
+    "authorizer":"org.apache.cassandra.auth.CassandraAuthorizer",
+    "commitlog_sync_period_in_ms":11000,
+    "role_manager":"org.apache.cassandra.auth.CassandraRoleManager"
+  }
+,
+"cluster-info":{"name":"cluster1","seeds":"cluster1-seed-service"},"datacenter-info":{"name":"dc1"},"jvm-options":{"initial_heap_size":"800M","max_heap_size":"800M"}}
 ```
 
 
