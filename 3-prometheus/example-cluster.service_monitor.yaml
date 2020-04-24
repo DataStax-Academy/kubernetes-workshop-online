@@ -1,0 +1,307 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: example-cluster
+  labels:
+    com.datastax.dse.cluster: example-cluster
+    monitoring: example-cluster
+spec:
+  selector:
+    matchLabels:
+      com.datastax.dse.cluster: example-cluster
+  targetLabel:
+  - com.datastax.dse.cluster
+  - com.datastax.dse.datacenter
+  endpoints:
+  - targetPort: 9103
+    scheme: http
+    path: /metrics
+    scrapeTimeout: 15s
+    interval: 15s
+    metricRelabelings:
+    #drop metrics we can calculate from prometheus directly
+    - sourceLabels: [__name__]
+      regex: .*rate_(mean|1m|5m|15m)
+      action: drop
+    #save the original name for all metrics
+    - sourceLabels: [__name__]
+      regex: (collectd_dse_.+)
+      targetLabel: prom_name
+      replacement: ${1}
+    - sourceLabels: ["prom_name"]
+      regex: .+_bucket_(\d+)
+      targetLabel: le
+      replacement: ${1}
+    - sourceLabels: ["prom_name"]
+      regex: .+_bucket_inf
+      targetLabel: le
+      replacement: +Inf
+    - sourceLabels: ["prom_name"]
+      regex: .*_histogram_p(\d+)
+      targetLabel: quantile
+      replacement: .${1}
+    - sourceLabels: ["prom_name"]
+      regex: .*_histogram_min
+      targetLabel: quantile
+      replacement: "0"
+    - sourceLabels: ["prom_name"]
+      regex: .*_histogram_max
+      targetLabel: quantile
+      replacement: "1"
+    #Table Metrics *ALL* we can drop
+    - sourceLabels: ["dse"]
+      regex: org\.apache\.cassandra\.metrics\.table\.(\w+)
+      action: drop
+    #Table Metrics
+    - sourceLabels: ["dse"]
+      regex: org\.apache\.cassandra\.metrics\.table\.(\w+)\.(\w+)\.(\w+)
+      targetLabel: table
+      replacement: ${3}
+    - sourceLabels: ["dse"]
+      regex: org\.apache\.cassandra\.metrics\.table\.(\w+)\.(\w+)\.(\w+)
+      targetLabel: keyspace
+      replacement: ${2}
+    - sourceLabels: ["dse"]
+      regex: org\.apache\.cassandra\.metrics\.table\.(\w+)\.(\w+)\.(\w+)
+      targetLabel: __name__
+      replacement: dse_table_${1}
+    #Keyspace Metrics
+    - sourceLabels: ["dse"]
+      regex: org\.apache\.cassandra\.metrics\.keyspace\.(\w+)\.(\w+)
+      targetLabel: keyspace
+      replacement: ${2}
+    - sourceLabels: ["dse"]
+      regex: org\.apache\.cassandra\.metrics\.keyspace\.(\w+)\.(\w+)
+      targetLabel: __name__
+      replacement: dse_keyspace_${1}
+    #ThreadPool Metrics (one type is repair.task so we just ignore the second part)
+    - sourceLabels: ["dse"]
+      regex: org\.apache\.cassandra\.metrics\.thread_pools\.(\w+)\.(\w+)\.(\w+).*
+      targetLabel: pool_type
+      replacement: ${2}
+    - sourceLabels: ["dse"]
+      regex: org\.apache\.cassandra\.metrics\.thread_pools\.(\w+)\.(\w+)\.(\w+).*
+      targetLabel: pool_name
+      replacement: ${3}
+    - sourceLabels: ["dse"]
+      regex: org\.apache\.cassandra\.metrics\.thread_pools\.(\w+)\.(\w+)\.(\w+).*
+      targetLabel: __name__
+      replacement: dse_thread_pools_${1}
+    #ClientRequest Metrics
+    - sourceLabels: ["dse"]
+      regex: org\.apache\.cassandra\.metrics\.client_request\.(\w+)\.(\w+)$
+      targetLabel: request_type
+      replacement: ${2}
+    - sourceLabels: ["dse"]
+      regex: org\.apache\.cassandra\.metrics\.client_request\.(\w+)\.(\w+)$
+      targetLabel: __name__
+      replacement: dse_client_request_${1}
+    - sourceLabels: ["dse"]
+      regex: org\.apache\.cassandra\.metrics\.client_request\.(\w+)\.(\w+)\.(\w+)$
+      targetLabel: cl
+      replacement: ${3}
+    - sourceLabels: ["dse"]
+      regex: org\.apache\.cassandra\.metrics\.client_request\.(\w+)\.(\w+)\.(\w+)$
+      targetLabel: request_type
+      replacement: ${2}
+    - sourceLabels: ["dse"]
+      regex: org\.apache\.cassandra\.metrics\.client_request\.(\w+)\.(\w+)\.(\w+)$
+      targetLabel: __name__
+      replacement: dse_client_request_${1}_cl
+    #Cache Metrics
+    - sourceLabels: ["dse"]
+      regex: org\.apache\.cassandra\.metrics\.cache\.(\w+)\.(\w+)
+      targetLabel: cache_name
+      replacement: ${2}
+    - sourceLabels: ["dse"]
+      regex: org\.apache\.cassandra\.metrics\.cache\.(\w+)\.(\w+)
+      targetLabel: __name__
+      replacement: dse_cache_${1}
+    #CQL Metrics
+    - sourceLabels: ["dse"]
+      regex: org\.apache\.cassandra\.metrics\.cql\.(\w+)
+      targetLabel: __name__
+      replacement: dse_cql_${1}
+    #Dropped Message Metrics
+    - sourceLabels: ["dse"]
+      regex: org\.apache\.cassandra\.metrics\.dropped_message\.(\w+)\.(\w+)
+      targetLabel: message_type
+      replacement: ${2}
+    - sourceLabels: ["dse"]
+      regex: org\.apache\.cassandra\.metrics\.dropped_message\.(\w+)\.(\w+)
+      targetLabel: __name__
+      replacement: dse_dropped_message_${1}
+    #Streaming Metrics
+    - sourceLabels: ["dse"]
+      regex: org\.apache\.cassandra\.metrics\.streaming\.(\w+)\.(.+)$
+      targetLabel: peer_ip
+      replacement: ${2}
+    - sourceLabels: ["dse"]
+      regex: org\.apache\.cassandra\.metrics\.streaming\.(\w+)\.(.+)$
+      targetLabel: __name__
+      replacement: dse_streaming_${1}
+    - sourceLabels: ["dse"]
+      regex: org\.apache\.cassandra\.metrics\.streaming\.(\w+)$
+      targetLabel: __name__
+      replacement: dse_streaming_${1}
+    #CommitLog Metrics
+    - sourceLabels: ["dse"]
+      regex: org\.apache\.cassandra\.metrics\.commit_log\.(\w+)
+      targetLabel: __name__
+      replacement: dse_commit_log_${1}
+    #Compaction Metrics
+    - sourceLabels: ["dse"]
+      regex: org\.apache\.cassandra\.metrics\.compaction\.(\w+)
+      targetLabel: __name__
+      replacement: dse_compaction_${1}
+    #Storage Metrics
+    - sourceLabels: ["dse"]
+      regex: org\.apache\.cassandra\.metrics\.storage\.(\w+)
+      targetLabel: __name__
+      replacement: dse_storage_${1}
+    #Batch Metrics
+    - sourceLabels: ["dse"]
+      regex: org\.apache\.cassandra\.metrics\.batch\.(\w+)
+      targetLabel: __name__
+      replacement: dse_batch_${1}
+    #Client Metrics
+    - sourceLabels: ["dse"]
+      regex: org\.apache\.cassandra\.metrics\.client\.(\w+)
+      targetLabel: __name__
+      replacement: dse_client_${1}
+    #BufferPool Metrics
+    - sourceLabels: ["dse"]
+      regex: org\.apache\.cassandra\.metrics\.buffer_pool\.(\w+)
+      targetLabel: __name__
+      replacement: dse_buffer_pool_${1}
+    #Index Metrics
+    - sourceLabels: ["dse"]
+      regex: org\.apache\.cassandra\.metrics\.index\.(\w+)
+      targetLabel: __name__
+      replacement: dse_sstable_index_${1}
+    #HintService Metrics
+    - sourceLabels: ["dse"]
+      regex: org\.apache\.cassandra\.metrics\.hinted_hand_off_manager\.([^\-]+)-(\w+)
+      targetLabel: peer_ip
+      replacement: ${2}
+    - sourceLabels: ["dse"]
+      regex: org\.apache\.cassandra\.metrics\.hinted_hand_off_manager\.([^\-]+)-(\w+)
+      targetLabel: __name__
+      replacement: dse_hints_${1}
+    #HintService Metrics
+    - sourceLabels: ["dse"]
+      regex: org\.apache\.cassandra\.metrics\.hints_service\.hints_delays\-(\w+)
+      targetLabel: peer_ip
+      replacement: ${1}
+    - sourceLabels: ["dse"]
+      regex: org\.apache\.cassandra\.metrics\.hints_service\.hints_delays\-(\w+)
+      targetLabel: __name__
+      replacement: dse_hints_hints_delays
+    - sourceLabels: ["dse"]
+      regex: org\.apache\.cassandra\.metrics\.hints_service\.([^\-]+)
+      targetLabel: __name__
+      replacement: dse_hints_${1}
+    #NodeSync Metrics
+    - sourceLabels: ["dse"]
+      regex: com\.datastax\.nodesync\.node_sync_metrics\.(node_sync_)?(\w+)
+      targetLabel: __name__
+      replacement: dse_node_sync_${2}
+    #ContinuousPaging Metrics
+    - sourceLabels: ["dse"]
+      regex: org\.apache\.cassandra\.metrics\.continuous_paging\.(\w+)
+      targetLabel: __name__
+      replacement: dse_continuous_paging_${1}
+    - sourceLabels: ["dse"]
+      regex: org\.apache\.cassandra\.metrics\.continuous_paging\.(\w+)\.(\w+)
+      targetLabel: __name__
+      replacement: dse_continuous_paging_${2}_${1}
+    # Misc
+    - sourceLabels: ["dse"]
+      regex: org\.apache\.cassandra\.metrics\.memtable_pool\.(\w+)
+      targetLabel: __name__
+      replacement: dse_memtable_pool_${1}
+    - sourceLabels: ["dse"]
+      regex: com\.datastax\.bdp\.type\.performance_objects\.name\.cql_slow_log\.metrics\.queries_latency
+      targetLabel: __name__
+      replacement: dse_cql_slow_log_query_latency
+    - sourceLabels: ["dse"]
+      regex: org\.apache\.cassandra\.metrics\.read_coordination\.(.*)
+      targetLabel: read_type
+      replacement: $1
+    - sourceLabels: ["dse"]
+      regex: org\.apache\.cassandra\.metrics\.read_coordination\.(.*)
+      targetLabel: __name__
+      replacement: dse_read_coordination_requests
+    #GC Metrics
+    - sourceLabels: ["dse"]
+      regex: jvm\.gc\.(\w+)\.(\w+)
+      targetLabel: collector_type
+      replacement: ${1}
+    - sourceLabels: ["dse"]
+      regex: jvm\.gc\.(\w+)\.(\w+)
+      targetLabel: __name__
+      replacement: dse_jvm_gc_${2}
+    #JVM Metrics
+    - sourceLabels: ["dse"]
+      regex: jvm\.memory\.(\w+)\.(\w+)
+      targetLabel: memory_type
+      replacement: ${1}
+    - sourceLabels: ["dse"]
+      regex: jvm\.memory\.(\w+)\.(\w+)
+      targetLabel: __name__
+      replacement: dse_jvm_memory_${2}
+    - sourceLabels: ["dse"]
+      regex: jvm\.memory\.pools\.(\w+)\.(\w+)
+      targetLabel: pool_name
+      replacement: ${2}
+    - sourceLabels: ["dse"]
+      regex: jvm\.memory\.pools\.(\w+)\.(\w+)
+      targetLabel: __name__
+      replacement: dse_jvm_memory_pool_${2}
+    - sourceLabels: ["dse"]
+      regex: jvm\.fd\.usage
+      targetLabel: __name__
+      replacement: dse_jvm_fd_usage
+    - sourceLabels: ["dse"]
+      regex: jvm\.buffers\.(\w+)\.(\w+)
+      targetLabel: buffer_type
+      replacement: ${1}
+    - sourceLabels: ["dse"]
+      regex: jvm\.buffers\.(\w+)\.(\w+)
+      targetLabel: __name__
+      replacement: dse_jvm_buffer_${2}
+    #Solr Table Metrics with metrics
+    - sourceLabels: ["dse"]
+      regex: com\.datastax\.bdp\.search\.(\w+)\.(\w+)\.(\w+)\.(\w+)
+      targetLabel: table
+      replacement: ${3}
+    - sourceLabels: ["dse"]
+      regex: com\.datastax\.bdp\.search\.(\w+)\.(\w+)\.(\w+)\.(\w+)
+      targetLabel: keyspace
+      replacement: ${2}
+    - sourceLabels: ["dse"]
+      regex: com\.datastax\.bdp\.search\.(\w+)\.(\w+)\.(\w+)\.(\w+)
+      targetLabel: __name__
+      replacement: dse_solr_metric_${1}_${4}
+    #Solr Table Metrics
+    - sourceLabels: ["dse"]
+      regex: com\.datastax\.bdp\.search\.(\w+)\.(\w+)\.(\w+)
+      targetLabel: table
+      replacement: ${3}
+    - sourceLabels: ["dse"]
+      regex: com\.datastax\.bdp\.search\.(\w+)\.(\w+)\.(\w+)
+      targetLabel: keyspace
+      replacement: ${2}
+    - sourceLabels: ["dse"]
+      regex: com\.datastax\.bdp\.search\.(\w+)\.(\w+)\.(\w+)
+      targetLabel: __name__
+      replacement: dse_solr_core_table_${1}
+    #Append the prom types back to formatted names
+    - sourceLabels: [__name__, "prom_name"]
+      regex: (dse_.*);.*(_micros_bucket|_bucket|_micros_count_total|_count_total|_total|_micros_sum|_sum|_stddev).*
+      separator: ;
+      targetLabel: __name__
+      replacement: ${1}${2}
+    - regex: prom_name
+      action: labeldrop

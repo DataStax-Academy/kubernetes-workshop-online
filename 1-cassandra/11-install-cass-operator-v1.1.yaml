@@ -1,87 +1,23 @@
 ---
 apiVersion: v1
+kind: Namespace
+metadata:
+  name: cass-operator
+---
+apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: cass-operator
+  namespace: cass-operator
 ---
-apiVersion: rbac.authorization.k8s.io/v1
-kind: Role
+apiVersion: v1
+data:
+  tls.crt: ""
+  tls.key: ""
+kind: Secret
 metadata:
-  creationTimestamp: null
-  name: cass-operator
-rules:
-- apiGroups:
-  - ""
-  resources:
-  - pods
-  - services
-  - endpoints
-  - persistentvolumeclaims
-  - events
-  - configmaps
-  - secrets
-  verbs:
-  - '*'
-- apiGroups:
-  - ""
-  resources:
-  - namespaces
-  verbs:
-  - get
-- apiGroups:
-  - apps
-  resources:
-  - deployments
-  - daemonsets
-  - replicasets
-  - statefulsets
-  verbs:
-  - '*'
-- apiGroups:
-  - monitoring.coreos.com
-  resources:
-  - servicemonitors
-  verbs:
-  - get
-  - create
-- apiGroups:
-  - apps
-  resourceNames:
-  - cass-operator
-  resources:
-  - deployments/finalizers
-  verbs:
-  - update
-- apiGroups:
-  - datastax.com
-  resources:
-  - '*'
-  verbs:
-  - '*'
-- apiGroups:
-  - policy
-  resources:
-  - poddisruptionbudgets
-  verbs:
-  - '*'
-- apiGroups:
-  - cassandra.datastax.com
-  resources:
-  - '*'
-  verbs:
-  - '*'
----
-kind: RoleBinding
-apiVersion: rbac.authorization.k8s.io/v1
-metadata:
-  name: cass-operator
-subjects:
-- kind: ServiceAccount
-  name: cass-operator
-roleRef:
-  kind: Role
-  name: cass-operator
-  apiGroup: rbac.authorization.k8s.io
+  name: cass-operator-webhook-config
+  namespace: cass-operator
 ---
 apiVersion: apiextensions.k8s.io/v1beta1
 kind: CustomResourceDefinition
@@ -118,7 +54,7 @@ spec:
         metadata:
           type: object
         spec:
-          description: CassandraDatacenterSpec defines the desired state of CassandraDatacenter
+          description: CassandraDatacenterSpec defines the desired state of a CassandraDatacenter
           properties:
             allowMultipleNodesPerWorker:
               description: Turning this option on allows multiple server pods to be
@@ -126,8 +62,8 @@ spec:
                 one server pod per k8s worker node using k8s podAntiAffinity and requiredDuringSchedulingIgnoredDuringExecution.
               type: boolean
             canaryUpgrade:
-              description: Indicates configuration and container image changes should
-                only be pushed to the first rack of the datacenter
+              description: Indicates that configuration and container image changes
+                should only be pushed to the first rack of the datacenter
               type: boolean
             clusterName:
               description: The name by which CQL clients and instances will know the
@@ -137,14 +73,7 @@ spec:
               minLength: 2
               type: string
             configBuilderImage:
-              description: Container image for the config builder init container,
-                with host, path, and tag
-              type: string
-            imageVersion:
-              description: version number
-              enum:
-              - 6.8.0
-              - 3.11.6
+              description: Container image for the config builder init container.
               type: string
             managementApiAuth:
               description: Config for the Management API certificates
@@ -164,12 +93,12 @@ spec:
                   - serverSecretName
                   type: object
               type: object
-            parked:
-              description: Indicates no server instances should run, like powering
-                down bare metal servers. Volume resources will be left intact in Kubernetes
-                and re-attached when the cluster is unparked. This is an experimental
-                feature that requires that pod ip addresses do not change on restart.
-              type: boolean
+            nodeSelector:
+              additionalProperties:
+                type: string
+              description: 'A map of label keys and values to restrict Cassandra node
+                scheduling to k8s workers with matchiing labels. More info: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#nodeselector'
+              type: object
             racks:
               description: A list of the named racks in the datacenter, representing
                 independent failure domains. The number of racks should match the
@@ -189,6 +118,11 @@ spec:
                 - name
                 type: object
               type: array
+            replaceNodes:
+              description: A list of pod names that need to be replaced.
+              items:
+                type: string
+              type: array
             resources:
               description: Kubernetes resource requests and limits, per pod
               properties:
@@ -207,8 +141,12 @@ spec:
                     value. More info: https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/'
                   type: object
               type: object
+            rollingRestartRequested:
+              description: Whether to do a rolling restart at the next opportunity.
+                The operator will set this back to false once the restart is in progress.
+              type: boolean
             serverImage:
-              description: 'Server image name. More info: https://kubernetes.io/docs/concepts/containers/images'
+              description: 'Cassandra server image name. More info: https://kubernetes.io/docs/concepts/containers/images'
               type: string
             serverType:
               description: 'Server type: "cassandra" or "dse"'
@@ -216,14 +154,28 @@ spec:
               - cassandra
               - dse
               type: string
+            serverVersion:
+              description: Version string for config builder, used to generate Cassandra
+                server configuration
+              enum:
+              - 6.8.0
+              - 3.11.6
+              - 4.0.0
+              type: string
             serviceAccount:
               description: The k8s service account to use for the server pods
               type: string
             size:
-              description: Desired number of server nodes
+              description: Desired number of Cassandra server nodes
               format: int32
               minimum: 1
               type: integer
+            stopped:
+              description: A stopped CassandraDatacenter will have no running server
+                pods, like using "stop" with traditional System V init scripts. Other
+                Kubernetes resources will be left intact, and volumes will re-attach
+                when the CassandraDatacenter workload is resumed.
+              type: boolean
             storageConfig:
               description: Describes the persistent storage request of each server
                 node
@@ -345,13 +297,13 @@ spec:
                   type: object
               type: object
             superuserSecretName:
-              description: This secret defines the username and password for the Server
-                superuser.
+              description: This secret defines the username and password for the Cassandra
+                server superuser. If it is omitted, we will generate a secret instead.
               type: string
           required:
           - clusterName
-          - imageVersion
           - serverType
+          - serverVersion
           - size
           - storageConfig
           type: object
@@ -361,11 +313,27 @@ spec:
             cassandraOperatorProgress:
               description: Last known progress state of the Cassandra Operator
               type: string
+            lastRollingRestart:
+              format: date-time
+              type: string
             lastServerNodeStarted:
               description: The timestamp when the operator last started a Server node
                 with the management API
               format: date-time
               type: string
+            nodeReplacements:
+              items:
+                type: string
+              type: array
+            nodeStatuses:
+              additionalProperties:
+                properties:
+                  hostID:
+                    type: string
+                  nodeIP:
+                    type: string
+                type: object
+              type: object
             superUserUpserted:
               description: The timestamp at which CQL superuser credentials were last
                 upserted to the management API
@@ -374,16 +342,141 @@ spec:
           type: object
       type: object
       x-kubernetes-preserve-unknown-fields: true
-  version: v1alpha2
+  version: v1beta1
   versions:
-  - name: v1alpha2
+  - name: v1beta1
     served: true
     storage: true
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  creationTimestamp: null
+  name: cass-operator-cluster-role
+rules:
+- apiGroups:
+  - admissionregistration.k8s.io
+  resourceNames:
+  - cassandradatacenter-webhook-registration
+  resources:
+  - validatingwebhookconfigurations
+  verbs:
+  - create
+  - get
+  - update
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: cass-operator
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cass-operator-cluster-role
+subjects:
+- kind: ServiceAccount
+  name: cass-operator
+  namespace: cass-operator
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: cass-operator
+  namespace: cass-operator
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - pods
+  - services
+  - endpoints
+  - persistentvolumeclaims
+  - events
+  - configmaps
+  - secrets
+  verbs:
+  - '*'
+- apiGroups:
+  - ""
+  resources:
+  - namespaces
+  verbs:
+  - get
+- apiGroups:
+  - apps
+  resources:
+  - deployments
+  - daemonsets
+  - replicasets
+  - statefulsets
+  verbs:
+  - '*'
+- apiGroups:
+  - monitoring.coreos.com
+  resources:
+  - servicemonitors
+  verbs:
+  - get
+  - create
+- apiGroups:
+  - apps
+  resourceNames:
+  - cass-operator
+  resources:
+  - deployments/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - datastax.com
+  resources:
+  - '*'
+  verbs:
+  - '*'
+- apiGroups:
+  - policy
+  resources:
+  - poddisruptionbudgets
+  verbs:
+  - '*'
+- apiGroups:
+  - cassandra.datastax.com
+  resources:
+  - '*'
+  verbs:
+  - '*'
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: cass-operator
+  namespace: cass-operator
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: cass-operator
+subjects:
+- kind: ServiceAccount
+  name: cass-operator
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    name: cass-operator-webhook
+  name: cassandradatacenter-webhook-service
+  namespace: cass-operator
+spec:
+  ports:
+  - port: 443
+    targetPort: 443
+  selector:
+    name: cass-operator
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: cass-operator
+  namespace: cass-operator
 spec:
   replicas: 1
   selector:
@@ -394,37 +487,77 @@ spec:
       labels:
         name: cass-operator
     spec:
-      serviceAccountName: cass-operator
       containers:
-        - name: cass-operator
-          image: datastaxlabs/dse-k8s-operator:0.9.0-20200316
-          imagePullPolicy: IfNotPresent
-          livenessProbe:
-            exec:
-              command:
-                - pgrep
-                - ".*operator"
-            initialDelaySeconds: 5
-            periodSeconds: 5
-            timeoutSeconds: 5
-            failureThreshold: 3
-          readinessProbe:
-            exec:
-              command:
-                - stat
-                - "/tmp/operator-sdk-ready"
-            initialDelaySeconds: 5
-            periodSeconds: 5
-            timeoutSeconds: 5
-            failureThreshold: 1
-          env:
-            - name: WATCH_NAMESPACE
-              valueFrom:
-                fieldRef:
-                  fieldPath: metadata.namespace
-            - name: POD_NAME
-              valueFrom:
-                fieldRef:
-                  fieldPath: metadata.name
-            - name: OPERATOR_NAME
-              value: "cass-operator"
+      - env:
+        - name: WATCH_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: OPERATOR_NAME
+          value: cass-operator
+        - name: SKIP_VALIDATING_WEBHOOK
+          value: "FALSE"
+        image: datastax/cass-operator:1.1.0
+        imagePullPolicy: IfNotPresent
+        livenessProbe:
+          exec:
+            command:
+            - pgrep
+            - .*operator
+          failureThreshold: 3
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          timeoutSeconds: 5
+        name: cass-operator
+        readinessProbe:
+          exec:
+            command:
+            - stat
+            - /tmp/operator-sdk-ready
+          failureThreshold: 1
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          timeoutSeconds: 5
+        volumeMounts:
+        - mountPath: /tmp/k8s-webhook-server/serving-certs
+          name: cass-operator-certs-volume
+          readOnly: false
+      serviceAccountName: cass-operator
+      volumes:
+      - name: cass-operator-certs-volume
+        secret:
+          secretName: cass-operator-webhook-config
+---
+apiVersion: admissionregistration.k8s.io/v1beta1
+kind: ValidatingWebhookConfiguration
+metadata:
+  name: cassandradatacenter-webhook-registration
+webhooks:
+- admissionReviewVersions:
+  - v1beta1
+  clientConfig:
+    service:
+      name: cassandradatacenter-webhook-service
+      namespace: cass-operator
+      path: /validate-cassandra-datastax-com-v1beta1-cassandradatacenter
+  failurePolicy: Ignore
+  matchPolicy: Equivalent
+  name: cassandradatacenter-webhook.cassandra.datastax.com
+  rules:
+  - apiGroups:
+    - cassandra.datastax.com
+    apiVersions:
+    - v1beta1
+    operations:
+    - CREATE
+    - UPDATE
+    - DELETE
+    resources:
+    - cassandradatacenters
+    scope: '*'
+  sideEffects: None
+  timeoutSeconds: 10
