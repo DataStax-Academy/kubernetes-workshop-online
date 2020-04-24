@@ -3,7 +3,8 @@ Welcome to the Kubernetes Cassandra Developer Workshop
 
 In this repository, you'll find everything from the online Cassandra Developer Workshop:
 - Materials used during presentations
-- Hnds-on exercises
+- Hands-on exercises
+
 Feel free to bookmark this page for future reference!
 
 <img src="https://s3.amazonaws.com/datastaxtraining/CaaS/CQLSplash.png" height="200" />
@@ -20,4 +21,4 @@ Feel free to bookmark this page for future reference!
 
 | Title  | Description
 |---|---|
-| **0 - Setup your Kub Cluster ** | Follow the instructions [HERE](https://github.com/DataStax-Academy/cassandra-workshop-online/blob/master/exercises/0_-_Bootstraping.md), this is dummy exercise to explain how it works  |
+| **0-Setup your Kub Cluster ** | Follow the instructions [HERE](0-setup-your-cluster/INSTALL.MD), this is dummy exercise to explain how it works  |
