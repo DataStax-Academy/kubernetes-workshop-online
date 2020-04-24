@@ -165,14 +165,14 @@ reclaimPolicy: Delete
 volumeBindingMode: WaitForFirstConsumer
 ```
 
-The above example can be customized to suit your environment and saved as `02-kind-storageClass.yaml`. For the rest of this guide, we'll assume you've defined a `StorageClass` and named it `server-storage`. 
+The above example can be customized to suit your environment and saved as `02-storageclass-kind.yaml`. For the rest of this guide, we'll assume you've defined a `StorageClass` and named it `server-storage`. 
 
 - **B5 - Apply the new policy**
 
 You can apply that file and get the resulting storage classes from Kubernetes.
 
 ```bash
-kubectl -n cass-operator apply -f ./0-setup-your-cluster/02-kind-storageClass.yaml
+kubectl -n cass-operator apply -f ./0-setup-your-cluster/02-storageclass-kind.yaml
 ```
 
 - **B6 - View policy result**

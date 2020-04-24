@@ -46,8 +46,13 @@ deployment "packageserver" successfully rolled out
 ```
 
 ```bash
-kubectl -n cass-operator apply -f ./3-prometheus_grafana/31-install-prometheus.yaml
-kubectl -n cass-operator apply -f ./3-prometheus_grafana/32-install-grafana.yaml
+kubectl -n cass-operator apply -f ./3-prometheus_grafana/dse-cluster.yaml
+```
+
+```bash
+kubectl -n cass-operator apply -f ./3-prometheus_grafana/prometheus/operator.yaml
+kubectl -n cass-operator apply -f ./3-prometheus_grafana/prometheus/service_monitor.yaml
+
 ```
 
 ```bash
