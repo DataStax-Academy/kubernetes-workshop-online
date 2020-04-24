@@ -4,34 +4,34 @@ We suppose here that you have docker and kubernetes installed
 
 ## A - KIND
 
-### 1. Installation
+- Installation
 
-- Installation on MAC
+Installation procedure for different OS are detailed here
+https://kind.sigs.k8s.io/docs/user/quick-start/
 
-```
+```bash
+
+# Installation on MAC
 brew install kind
-```
-Installation procedure for other machines https://kind.sigs.k8s.io/docs/user/quick-start/
 
-- Check existing Kind clusters
-
-```
+# Check existing Kind clusters
 kind get clusters
 ```
 
-**Expected output**
+***Expected output***
 
 ```
 No kind clusters found.
 ```
 
-### 2. Create a KIND cluster (1 master, 5 workers)
+- Create a KIND cluster 
 
 ```
+# Apply the configuration (1 master, 5 workers)
 kind create cluster --name kind-cassandra --config ./0-setup-your-cluster/01-kind-config.yaml
 ```
 
-***Expected output**
+***Expected output***
 
 ```
 Creating cluster "kind-cassandra" ...
@@ -48,9 +48,10 @@ kubectl cluster-info --context kind-kind-cassandra
 Have a question, bug, or feature request? Let us know! https://kind.sigs.k8s.io/#community 🙂
 ```
 
-### 3. Check your k8s cluster
+- Check your k8s cluster
 
-```
+```bash
+# Show the new created cluster
 kind get clusters
 ```
 
