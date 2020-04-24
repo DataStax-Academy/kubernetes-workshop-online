@@ -56,7 +56,11 @@ kubectl -n cass-operator apply -f ./3-prometheus_grafana/34-prometheus-node-expo
 kubectl -n cass-operator apply -f ./3-prometheus_grafana/35-prometheus-exporter-service-monitor.yaml
 ```
 
-
+```bash
+kubectl -n cass-operator apply -f ./3-prometheus_grafana/36-grafana-instance.yaml
+kubectl -n cass-operator apply -f ./3-prometheus_grafana/37-grafana-datasource.yaml
+kubectl -n cass-operator apply -f ./3-prometheus_grafana/38-grafana-dashboard.yaml
+```
 
 ## Congratulations your are set.
 
