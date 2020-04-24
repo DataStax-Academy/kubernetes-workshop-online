@@ -26,7 +26,7 @@ No kind clusters found.
 
 - Create a KIND cluster 
 
-```
+```bash
 # Apply the configuration (1 master, 5 workers)
 kind create cluster --name kind-cassandra --config ./0-setup-your-cluster/01-kind-config.yaml
 ```
@@ -55,19 +55,19 @@ Have a question, bug, or feature request? Let us know! https://kind.sigs.k8s.io/
 kind get clusters
 ```
 
-**Expected output**
+***Expected output***
 
 ```
 kind-cassandra
 ```
 
-### 4. Link with Kubectl
+- Link with Kubectl
 
-```
+```bash
 kubectl cluster-info --context kind-kind-cassandra
 ```
 
-**Expected output**
+***Expected output***
 
 ```
 Kubernetes master is running at https://127.0.0.1:45451
@@ -75,12 +75,15 @@ KubeDNS is running at https://127.0.0.1:45451/api/v1/namespaces/kube-system/serv
 To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
 ```
 
-```
+- List cluster nodes nodes with `kubectl`
+
+```bash
 kubectl get nodes
 ```
 
-***Expected output**
-```
+***Expected output***
+
+s```
 NAME                           STATUS   ROLES    AGE    VERSION
 kind-cassandra-control-plane   Ready    master   2m4s   v1.17.0
 kind-cassandra-worker          Ready    <none>   86s    v1.17.0
@@ -92,7 +95,7 @@ kind-cassandra-worker5         Ready    <none>   88s    v1.17.0
 
 ## B - NAMESPACE AND STORAGECLASS
 
-### 1. Create namespace
+- Create namespace
 
 ```
 kubectl create ns cass-operator
@@ -104,19 +107,20 @@ kubectl create ns cass-operator
 namespace/cass-operator created
 ```
 
-### 2. List storage class
+- List storage class
 
 ```
 kubectl get storageclass
 ```
 
 ***Expected output***
+
 ```
 NAME                 PROVISIONER             RECLAIMPOLICY   VOLUMEBINDINGMODE      ALLOWVOLUMEEXPANSION   AGE
 standard (default)   rancher.io/local-path   Delete          WaitForFirstConsumer   false                  11m
 ```
 
-### 3. Describe a storage class
+- Describe a storage class
 
 ```
 kubectl describe storageclass standard
@@ -138,7 +142,7 @@ VolumeBindingMode:     WaitForFirstConsumer
 Events:                <none>
 ```
 
-### 4. Clone the default storage class and name it `server-storage`
+- Clone the default storage class and name it `server-storage`
 
 ```
 apiVersion: storage.k8s.io/v1
@@ -152,7 +156,7 @@ reclaimPolicy: Delete
 volumeBindingMode: WaitForFirstConsumer
 ```
 
-### 5. Apply the new policy
+- Apply the new policy
 
 ```
 kubectl -n cass-operator apply -f ./0-setup-your-cluster/02-kind-storageClass.yaml
@@ -170,7 +174,7 @@ standard (default)         rancher.io/local-path   Delete          WaitForFirstC
 ```
 
 
-# Congratulations your are set.
+## Congratulations your are set.
 
 
 
