@@ -26,6 +26,8 @@ No kind clusters found.
 
 - **A2 - Create a KIND cluster**
 
+The Cassandra operator will create a node per worker. As such we need to initialize a cluster with at leat 3 workers. In the following configuration we went up to 5.
+
 ```bash
 # Apply the configuration (1 master, 5 workers)
 kind create cluster --name kind-cassandra --config ./0-setup-your-cluster/01-kind-config.yaml
@@ -97,6 +99,8 @@ kind-cassandra-worker5         Ready    <none>   88s    v1.17.0
 
 - **B1 - Create namespace**
 
+Cass-operator is built to watch over pods running Casandra or DSE in a Kubernetes namespace. Create a namespace for the cluster. For the rest of this guide, we will be using the namespace `cass-operator`. Adjust further commands as necessary to match the namespace you defined.
+
 ```
 kubectl create ns cass-operator
 ```
@@ -108,6 +112,8 @@ namespace/cass-operator created
 ```
 
 - **B2 - List storage class**
+
+Kubernetes uses the `StorageClass` resource as an abstraction layer between pods needing persistent storage and the storage resources that a specific Kubernetes cluster can provide. We recommend using the fastest type of networked storage available. Let's create one for your environment.
 
 ```
 kubectl get storageclass
@@ -145,7 +151,7 @@ Events:                <none>
 - **B4 - Clone the default storage class and name it `server-storage`**
 
 
-Sample for my local instance (*to be adapted*)
+Sample for my local instance (*to be adapted*).
 
 ```yaml
 apiVersion: storage.k8s.io/v1
@@ -159,14 +165,17 @@ reclaimPolicy: Delete
 volumeBindingMode: WaitForFirstConsumer
 ```
 
+The above example can be customized to suit your environment and saved as `02-kind-storageClass.yaml`. For the rest of this guide, we'll assume you've defined a `StorageClass` and named it `server-storage`. 
+
 - **B5 - Apply the new policy**
+
+You can apply that file and get the resulting storage classes from Kubernetes.
 
 ```bash
 kubectl -n cass-operator apply -f ./0-setup-your-cluster/02-kind-storageClass.yaml
 ```
 
 - **B6 - View policy result**
-
 
 ```
 kubectl -n cass-operator get storageClass
@@ -182,7 +191,11 @@ standard (default)         rancher.io/local-path   Delete          WaitForFirstC
 ## Congratulations your are set.
 
 
+Clean up later
 
+```bash
+kind delete cluster --name kind-cassandra
+```
 
 
 
