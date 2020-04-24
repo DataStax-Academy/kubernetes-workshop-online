@@ -305,12 +305,11 @@ diff ./1-cassandra/12-cassandra-cluster-1nodes.yaml ./1-cassandra/12-cassandra-c
 - **D3 - Apply the new configuration**
 
 
-```bash
+```bashs
 kubectl -n workshop-cassandra apply -f ./1-cassandra/12-cassandra-cluster-3nodes.yaml
 ```
 
 ## E - Change Cassandra Configuration
-
 
 
 ## Congratulations your are set.
