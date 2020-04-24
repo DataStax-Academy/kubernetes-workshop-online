@@ -1,15 +1,19 @@
 # Setting your cluster up
 
+We suppose here that you have docker and kubernetes installed
+
 ## A - KIND
 
 ### 1. Installation
+
+- Installation on MAC
 
 ```
 brew install kind
 ```
 Installation procedure for other machines https://kind.sigs.k8s.io/docs/user/quick-start/
 
-### Check clusters for kinds
+- Check existing Kind clusters
 
 ```
 kind get clusters
