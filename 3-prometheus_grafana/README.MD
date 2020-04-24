@@ -62,6 +62,12 @@ kubectl -n cass-operator apply -f ./3-prometheus_grafana/37-grafana-datasource.y
 kubectl -n cass-operator apply -f ./3-prometheus_grafana/38-grafana-dashboard.yaml
 ```
 
+```bash
+kubectl -n cass-operator port-forward service/grafana-service 3000:3000
+kubectl -n cass-operator port-forward service/prometheus-operated 9090:9090
+```
+
+
 ## Congratulations your are set.
 
 
