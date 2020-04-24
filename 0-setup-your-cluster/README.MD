@@ -4,7 +4,7 @@ We suppose here that you have docker and kubernetes installed
 
 ## A - KIND
 
-- **Installation**
+- **A1 - Installation**
 
 Installation procedure for different OS are detailed here
 https://kind.sigs.k8s.io/docs/user/quick-start/
@@ -24,7 +24,7 @@ kind get clusters
 No kind clusters found.
 ```
 
-- **Create a KIND cluster**
+- **A2 - Create a KIND cluster**
 
 ```bash
 # Apply the configuration (1 master, 5 workers)
@@ -48,26 +48,26 @@ kubectl cluster-info --context kind-kind-cassandra
 Have a question, bug, or feature request? Let us know! https://kind.sigs.k8s.io/#community 🙂
 ```
 
-- Check your k8s cluster
+- **A3 Check your k8s cluster**
 
 ```bash
 # Show the new created cluster
 kind get clusters
 ```
 
-***Expected output***
+*Expected output*
 
 ```
 kind-cassandra
 ```
 
-- Link with Kubectl
+- **A4 - Link with Kubectl**
 
 ```bash
 kubectl cluster-info --context kind-kind-cassandra
 ```
 
-***Expected output***
+*Expected output*
 
 ```
 Kubernetes master is running at https://127.0.0.1:45451
@@ -75,15 +75,15 @@ KubeDNS is running at https://127.0.0.1:45451/api/v1/namespaces/kube-system/serv
 To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
 ```
 
-- List cluster nodes nodes with `kubectl`
+- **A5 - List cluster nodes nodes with `kubectl`**
 
 ```bash
 kubectl get nodes
 ```
 
-***Expected output***
+*Expected output*
 
-s```
+```
 NAME                           STATUS   ROLES    AGE    VERSION
 kind-cassandra-control-plane   Ready    master   2m4s   v1.17.0
 kind-cassandra-worker          Ready    <none>   86s    v1.17.0
@@ -95,38 +95,38 @@ kind-cassandra-worker5         Ready    <none>   88s    v1.17.0
 
 ## B - NAMESPACE AND STORAGECLASS
 
-- Create namespace
+- **B1 - Create namespace**
 
 ```
 kubectl create ns cass-operator
 ```
 
-***Expected output***
+*Expected output*
 
 ```
 namespace/cass-operator created
 ```
 
-- List storage class
+- **B2 - List storage class**
 
 ```
 kubectl get storageclass
 ```
 
-***Expected output***
+*Expected output*
 
 ```
 NAME                 PROVISIONER             RECLAIMPOLICY   VOLUMEBINDINGMODE      ALLOWVOLUMEEXPANSION   AGE
 standard (default)   rancher.io/local-path   Delete          WaitForFirstConsumer   false                  11m
 ```
 
-- Describe a storage class
+- **B3 - Describe a storage class**
 
 ```
 kubectl describe storageclass standard
 ```
 
-***Expected Ouput***
+*Expected Ouput*
 
 ```
 Name:            standard
@@ -142,9 +142,12 @@ VolumeBindingMode:     WaitForFirstConsumer
 Events:                <none>
 ```
 
-- Clone the default storage class and name it `server-storage`
+- **B4 - Clone the default storage class and name it `server-storage`*
 
-```
+
+Sample for my local instance (*to be adapted*)
+
+```yaml
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
@@ -156,23 +159,25 @@ reclaimPolicy: Delete
 volumeBindingMode: WaitForFirstConsumer
 ```
 
-- Apply the new policy
+- **B5 - Apply the new policy**
 
-```
+```bash
 kubectl -n cass-operator apply -f ./0-setup-your-cluster/02-kind-storageClass.yaml
 ```
+
+- **B6 - View policy result**
+
 
 ```
 kubectl -n cass-operator get storageClass
 ```
 
-***Expected Ouput***
+*Expected Ouput*
 ```
 NAME                       PROVISIONER             RECLAIMPOLICY   VOLUMEBINDINGMODE      ALLOWVOLUMEEXPANSION   AGE
 workshop-cassandra-storage (default)   rancher.io/local-path   Delete          WaitForFirstConsumer   false                  31m
 standard (default)         rancher.io/local-path   Delete          WaitForFirstConsumer   false                  88m
 ```
-
 
 ## Congratulations your are set.
 
