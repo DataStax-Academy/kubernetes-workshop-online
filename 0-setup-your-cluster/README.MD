@@ -1,27 +1,33 @@
-## Setting your cluster up
+# Setting your cluster up
 
-### Install kind
+## Install kind
+
+### Installation on MAC
 
 ```
 brew install kind
 ```
+Installation procedure for other machines https://kind.sigs.k8s.io/docs/user/quick-start/
 
 ### Check clusters for kinds
+
 ```
 kind get clustets
 ```
 
-Expected output:
+**Expected output:**
+
 ```
 No kind clusters found.
 ```
 
 ### Create a kub cluster (1 master, 3 workers)
+
 ```
 kind create cluster --name kind-cassandra --config ./0-setup-your-cluster/01-kind-config.yaml
 ```
 
-Expected output:
+***Expected output**
 ```
 Creating cluster "kind-cassandra" ...
  ✓ Ensuring node image (kindest/node:v1.17.0) 🖼
