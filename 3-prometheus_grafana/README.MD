@@ -9,7 +9,7 @@ export namespace=cass-operator
 ```
 
 ```
-echo echo $namespace
+echo $namespace
 ```
 
 ```
@@ -47,13 +47,13 @@ deployment "packageserver" successfully rolled out
 
 
 ```bash
-kubectl -n cass-operator apply -f ./3-prometheus_grafana/prometheus/operator.yaml
+kubectl -n cass-operator create -f ./3-prometheus_grafana/prometheus/operator.yaml
 kubectl -n cass-operator apply -f ./3-prometheus_grafana/prometheus/service_monitor.yaml
 kubectl -n cass-operator apply -f ./3-prometheus_grafana/prometheus/instance.yaml
 ```
 
 ```bash
-kubectl -n cass-operator apply -f ./3-prometheus_grafana/grafana/operator.yaml
+kubectl -n cass-operator create -f ./3-prometheus_grafana/grafana/operator.yaml
 kubectl -n cass-operator apply -f ./3-prometheus_grafana/grafana/*.dashboard.yaml
 kubectl -n cass-operator apply -f ./3-prometheus_grafana/grafana/instance.yaml
 ```
