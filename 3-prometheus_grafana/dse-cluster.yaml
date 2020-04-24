@@ -3,9 +3,9 @@
 apiVersion: cassandra.datastax.com/v1beta1
 kind: CassandraDatacenter
 metadata:
-  name: dse-cluster
+  name: dsecluster
 spec:
-  clusterName: clusterDse
+  clusterName: dsecluster
   serverType: dse
   serverVersion: "6.8.0"
   managementApiAuth:

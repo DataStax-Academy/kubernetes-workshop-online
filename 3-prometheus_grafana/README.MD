@@ -13,7 +13,7 @@ echo echo $namespace
 ```
 
 ```
-./3-prometheus_grafana/30-install-olm.sh 0.14.1
+./3-prometheus_grafana/install-olm.sh 0.14.1
 ```
 
 ```
@@ -45,26 +45,22 @@ Package server phase: Succeeded
 deployment "packageserver" successfully rolled out
 ```
 
-```bash
-kubectl -n cass-operator apply -f ./3-prometheus_grafana/dse-cluster.yaml
-```
 
 ```bash
 kubectl -n cass-operator apply -f ./3-prometheus_grafana/prometheus/operator.yaml
 kubectl -n cass-operator apply -f ./3-prometheus_grafana/prometheus/service_monitor.yaml
-
+kubectl -n cass-operator apply -f ./3-prometheus_grafana/prometheus/instance.yaml
 ```
 
 ```bash
-kubectl -n cass-operator apply -f ./3-prometheus_grafana/33-prometheus-instance.yaml
-kubectl -n cass-operator apply -f ./3-prometheus_grafana/34-prometheus-node-exporter.yaml
-kubectl -n cass-operator apply -f ./3-prometheus_grafana/35-prometheus-exporter-service-monitor.yaml
+kubectl -n cass-operator apply -f ./3-prometheus_grafana/grafana/operator.yaml
+kubectl -n cass-operator apply -f ./3-prometheus_grafana/grafana/*.dashboard.yaml
+kubectl -n cass-operator apply -f ./3-prometheus_grafana/grafana/instance.yaml
 ```
 
+
 ```bash
-kubectl -n cass-operator apply -f ./3-prometheus_grafana/36-grafana-instance.yaml
-kubectl -n cass-operator apply -f ./3-prometheus_grafana/37-grafana-datasource.yaml
-kubectl -n cass-operator apply -f ./3-prometheus_grafana/38-grafana-dashboard.yaml
+kubectl -n cass-operator apply -f ./3-prometheus_grafana/dse-cluster.yaml
 ```
 
 ```bash
