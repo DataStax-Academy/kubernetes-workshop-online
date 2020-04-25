@@ -1,5 +1,13 @@
 # Setting your cluster up
 
+## Prerequisites
+
+```
+docker -v
+kubectl version
+docker-compose -v
+```
+
 We suppose here that you have docker and kubernetes installed
 
 ## A - KIND

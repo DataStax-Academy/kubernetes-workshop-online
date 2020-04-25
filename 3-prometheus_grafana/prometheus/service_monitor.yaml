@@ -2,8 +2,8 @@ apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
   labels:
-    cassandra.datastax.com/cluster: dsecluster
-  name: dsecluster
+    cassandra.datastax.com/cluster: cluster2
+  name: dse-cluster
 spec:
   endpoints:
   - interval: 15s
@@ -336,7 +336,7 @@ spec:
     targetPort: 9103
   selector:
     matchLabels:
-      cassandra.datastax.com/cluster: dsecluster
-  targetLabel:
+      cassandra.datastax.com/cluster: cluster2
+  targetLabels:
   - cassandra.datastax.com/cluster
   - cassandra.datastax.com/datacenter

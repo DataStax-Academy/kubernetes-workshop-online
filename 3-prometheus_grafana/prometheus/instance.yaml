@@ -51,10 +51,10 @@ spec:
   securityContext: {}
   serviceMonitorSelector:
     matchLabels:
-      monitoring: dse-cluster
+      cassandra.datastax.com/cluster: cluster2
   ruleSelector: {}
   alerting:
     alertmanagers:
-      - namespace: default
+      - namespace: cass-operator
         name: alertmanager-main
         port: web

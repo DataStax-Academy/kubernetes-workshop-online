@@ -5,18 +5,18 @@ metadata:
   name: default
 spec:
   ingress:
-    enabled: true
+    enabled: false
   config:
     auth:
       disable_signout_menu: true
     auth.anonymous:
-      enabled: true
+      enabled: false
     log:
       level: warn
       mode: console
     security:
       admin_password: secret
-      admin_user: root
+      admin_user: admin
   dashboardLabelSelector:
     - matchExpressions:
         - key: app
