@@ -110,12 +110,10 @@ grafana-service                       ClusterIP   10.96.240.129   <none>        
 prometheus-operated                   ClusterIP   None            <none>        9090/TCP            4m56s   operated-prometheus=true
 ```
 
-
 ```bash
 kubectl -n cass-operator port-forward service/grafana-service 3000:3000
 kubectl -n cass-operator port-forward service/prometheus-operated 9090:9090
 ```
-
 
 ```bash
 kubectl -n cass-operator apply -f ./3-prometheus_grafana/dse-mini.yaml
@@ -217,6 +215,15 @@ exit
 kubectl -n cass-operator delete -f ./3-prometheus_grafana/dse-cluster.yaml
 ```
 
+
+```bash
+kubectl -n cass-operator apply -f ./3-prometheus_grafana/dse-mini-enablemetrics.yaml
+```
+
+
+```bash
+kubectl -n cass-operator apply -f ./3-prometheus_grafana/dse-mini-stop.yaml
+```
 
 
 ## Congratulations your are set.

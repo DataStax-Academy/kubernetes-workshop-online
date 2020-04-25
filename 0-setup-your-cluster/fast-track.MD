@@ -9,7 +9,7 @@ kubectl -n cass-operator create -f ./3-prometheus_grafana/prometheus/operator.ya
 kubectl -n cass-operator create -f ./3-prometheus_grafana/grafana/operator.yaml
 kubectl -n cass-operator apply -f ./3-prometheus_grafana/prometheus/service_monitor.yaml
 kubectl -n cass-operator apply -f ./3-prometheus_grafana/prometheus/instance.yaml
-kubectl -n cass-operator create -f ./3-prometheus_grafana/grafana/datasource.yaml
+kubectl -n cass-operator createn -f ./3-prometheus_grafana/grafana/datasource.yaml
 kubectl -n cass-operator apply -f ./3-prometheus_grafana/grafana/dse-analytics.dashboard.yaml
 kubectl -n cass-operator apply -f ./3-prometheus_grafana/grafana/dse-cluster-condensed.dashboard.yaml
 kubectl -n cass-operator apply -f ./3-prometheus_grafana/grafana/dse-cluster-metrics.dashboard.yaml
