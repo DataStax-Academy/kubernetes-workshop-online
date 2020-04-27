@@ -1,11 +1,52 @@
-# Setting your cluster up
+# Section 0 - Create the Kubernetes Cluster
 
 ![OK](https://github.com/DataStax-Academy/kubernetes-workshop-online/blob/master/4-materials/images/00-screenplay.png?raw=true)
 
-## Prerequisites
+This guide will show you how to install a **Kubernetes** cluster on a single machine in order to later, deploy an Apache Cassandra™ database.
 
-```
+### 1. Docker
+
+| Title  | Description
+|---|---|
+| Install on Windows | * [Docker Dekstop for Windows](https://docs.docker.com/docker-for-windows/install/) |
+
+
+
+References : 
+References : https://www.docker.com/products/docker-desktop
+
+```bash
+brew update                           # Fetch latest version of homebrew and formula.
+brew tap caskroom/cask                # Tap the Caskroom/Cask repository from Github using HTTPS.
+brew search docker                    # Searches all known Casks for a partial or exact match.
+brew cask info docker                 # Displays information about the given Cask
+brew cask install docker              # Install the given cask.
+brew cleanup                          # Remove any older versions from the cellar.
+
 docker -v
+```
+
+**Install Docker COmpose**
+
+Reference: https://docs.docker.com/compose/install/
+
+```bash
+```
+
+**Install Kube CTL**
+Reference https://kubernetes.io/docs/tasks/tools/install-kubectl/
+```
+# Download binary and move to /bin
+curl -LO "https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/darwin/amd64/kubectl"
+# Make the file executable
+chmod +x ./kubectl
+# Move the binary in to your PATH.
+sudo mv ./kubectl /usr/local/bin/kubectl
+#Test to ensure the version you installed is up-to-date:
+kubectl version --client
+```
+
+
 kubectl version
 docker-compose -v
 ```
@@ -193,15 +234,20 @@ kubectl -n cass-operator get storageClass
 
 *Expected Ouput*
 ```
-NNAME                       PROVISIONER             RECLAIMPOLICY   VOLUMEBINDINGMODE      ALLOWVOLUMEEXPANSION   AGE
-server-storage (default)   rancher.io/local-path   Delete          WaitForFirstConsumer   false                  8s
-standard (default)         rancher.io/local-path   Delete          WaitForFirstConsumer   false                  6m5s
+NAME                       PROVISIONER             RECLAIMPOLICY   VOLUMEBINDINGMODE      ALLOWVOLUMEEXPANSION   AGE
+workshop-cassandra-storage (default)   rancher.io/local-path   Delete          WaitForFirstConsumer   false                  31m
+standard (default)         rancher.io/local-path   Delete          WaitForFirstConsumer   false                  88m
 ```
 
 ## Congratulations your are set.
 
 
-![OK](https://github.com/DataStax-Academy/kubernetes-workshop-online/blob/master/4-materials/images/01-pic1.png?raw=true)
+Clean up later
+
+```bash
+kind delete cluster --name kind-cassandra
+```
+
 
 
 
