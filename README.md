@@ -1,13 +1,13 @@
-Welcome to the Kubernetes Cassandra Developer Workshop
+Cassandra Developer Workshop - Kubernetes
 ======================================================
+
+![OK](https://github.com/DataStax-Academy/kubernetes-workshop-online/blob/master/4-materials/images/00-screenplay.png?raw=true)
 
 In this repository, you'll find everything from the online Cassandra Developer Workshop:
 - Materials used during presentations
 - Hands-on exercises
 
 Feel free to bookmark this page for future reference!
-
-![OK](https://github.com/DataStax-Academy/kubernetes-workshop-online/blob/master/4-materials/images/00-screenplay.png?raw=true)
 
 ## Available Materials
 

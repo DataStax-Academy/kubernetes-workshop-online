@@ -133,6 +133,14 @@ git clone https://github.com/DataStax-Academy/kubernetes-workshop-online.git
 cd kubernetes-workshop-online
 ```
 
+### BASH
+
+Override the prompt:
+
+```bash
+export PS1="\[\033[31m\]\u\[\033[00m\]@\[\033[32m\]\h\[\033[00m\]:\[\033[34m\]\w\[\033[00m\]> "
+```
+
 ### Web SSH
 
 Installation:
