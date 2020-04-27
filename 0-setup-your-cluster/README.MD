@@ -1,36 +1,87 @@
-# Section 0 - Create the Kubernetes Cluster
 
 ![OK](https://github.com/DataStax-Academy/kubernetes-workshop-online/blob/master/4-materials/images/00-screenplay.png?raw=true)
 
-This guide will show you how to install a **Kubernetes** cluster on a single machine in order to later, deploy an Apache Cassandra™ database.
+# Create a Kubernetes Cluster
 
-### 1. Docker
+This guide will show you how to install a **Kubernetes** cluster on a single machine in order to later, deploy an Apache Cassandra™ database. It be composed of one *master* and multiple *workers*. 
 
-| Title  | Description
-|---|---|
-| Install on Windows | * [Docker Dekstop for Windows](https://docs.docker.com/docker-for-windows/install/) |
+### 1. Install Docker
 
+![docker](https://github.com/DataStax-Academy/kubernetes-workshop-online/blob/master/4-materials/images/docker32.png?raw=true) 
+Docker is an open-source project that automates the deployment of software applications inside containers by providing an additional layer of abstraction and automation of OS-level virtualization on Linux.
 
+![Windows](https://github.com/DataStax-Academy/kubernetes-workshop-online/blob/master/4-materials/images/windows32.png?raw=true) : To install on windows please use the following installer [Docker Dekstop for Windows Installer](https://download.docker.com/win/stable/Docker%20Desktop%20Installer.exe)
 
-References : 
-References : https://www.docker.com/products/docker-desktop
+![osx](https://github.com/DataStax-Academy/kubernetes-workshop-online/blob/master/4-materials/images/mac32.png?raw=true) : To install on MACOS please use the following installer [Docker Dekstop for MAC Installer](https://download.docker.com/mac/stable/Docker.dmg)
 
+Or using [homebrew](https://docs.brew.sh/Installation)
 ```bash
-brew update                           # Fetch latest version of homebrew and formula.
-brew tap caskroom/cask                # Tap the Caskroom/Cask repository from Github using HTTPS.
-brew search docker                    # Searches all known Casks for a partial or exact match.
-brew cask info docker                 # Displays information about the given Cask
-brew cask install docker              # Install the given cask.
-brew cleanup                          # Remove any older versions from the cellar.
-
+# Fetch latest version of homebrew and formula.
+brew update              
+# Tap the Caskroom/Cask repository from Github using HTTPS.
+brew tap caskroom/cask                
+# Searches all known Casks for a partial or exact match.
+brew search docker                    
+# Displays information about the given Cask
+brew cask info docker
+# Install the given cask.
+brew cask install docker              
+# Remove any older versions from the cellar.
+brew cleanup
+# Validate installation
 docker -v
 ```
 
-**Install Docker COmpose**
-
-Reference: https://docs.docker.com/compose/install/
+![linux](https://github.com/DataStax-Academy/kubernetes-workshop-online/blob/master/4-materials/images/linux.png?raw=true) To install on linux (centOS) you can use the following commands
 
 ```bash
+# Remove if already install
+sudo yum remove docker \
+                  docker-client \
+                  docker-client-latest \
+                  docker-common \
+                  docker-latest \
+                  docker-latest-logrotate \
+                  docker-logrotate \
+                  docker-engine
+# Utils
+sudo yum install -y yum-utils
+# Adding docker-ce repo
+sudo dnf config-manager --add-repo=https://download.docker.com/linux/centos/docker-ce.repo
+# Install
+sudo dnf -y  install docker-ce --nobest
+# Enable service
+sudo systemctl enable --now docker
+# Get Status
+systemctl status  docker
+
+# Logout....Lougin
+exit
+# Create user
+sudo usermod -aG docker $USER
+newgrp docker
+
+# Validation
+docker images
+docker run hello-world
+docker -v
+```
+
+### 2. Install Docker Compose
+
+Reference Documentation : https://docs.docker.com/compose/install/
+
+![Windows](https://github.com/DataStax-Academy/kubernetes-workshop-online/blob/master/4-materials/images/windows32.png?raw=true) : Already include in the previous package
+
+![osx](https://github.com/DataStax-Academy/kubernetes-workshop-online/blob/master/4-materials/images/mac32.png?raw=true) : Already include in the previous package
+
+![linux](https://github.com/DataStax-Academy/kubernetes-workshop-online/blob/master/4-materials/images/linux.png?raw=true) To install on linux (centOS) you can use the following commands
+
+```bash
+# Download deliverable and move to target location
+sudo curl -L "https://github.com/docker/compose/releases/download/1.23.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+# Allow execution
+sudo chmod +x /usr/local/bin/docker-compose
 ```
 
 **Install Kube CTL**
