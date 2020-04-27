@@ -204,7 +204,9 @@ standard (default)         rancher.io/local-path   Delete          WaitForFirstC
 <img src="https://s3.amazonaws.com/datastaxtraining/CaaS/CQLSplash.png" height="200" />
 
 
-![OK](https://github.com/[DataStax-Academy]/[kubernetes-workshop-online]/blob/[master]/0-setup-your-cluster/home.png?raw=true)
+![OK](https://github.com/DataStax-Academy/kubernetes-workshop-online/blob/master/0-setup-your-cluster/screenshots/home.png?raw=true)
+
+![OK](https://github.com/DataStax-Academy/kubernetes-workshop-online/blob/master/0-setup-your-cluster/screenshots/pic1.png?raw=true)
 
 
 
