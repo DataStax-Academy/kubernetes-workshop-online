@@ -1,5 +1,8 @@
 # Setting your cluster up
 
+
+<img src="https://s3.amazonaws.com/datastaxtraining/CaaS/CQLSplash.png" height="200" />
+
 ## Prerequisites
 
 ```
@@ -191,20 +194,17 @@ kubectl -n cass-operator get storageClass
 
 *Expected Ouput*
 ```
-NAME                       PROVISIONER             RECLAIMPOLICY   VOLUMEBINDINGMODE      ALLOWVOLUMEEXPANSION   AGE
-workshop-cassandra-storage (default)   rancher.io/local-path   Delete          WaitForFirstConsumer   false                  31m
-standard (default)         rancher.io/local-path   Delete          WaitForFirstConsumer   false                  88m
+NNAME                       PROVISIONER             RECLAIMPOLICY   VOLUMEBINDINGMODE      ALLOWVOLUMEEXPANSION   AGE
+server-storage (default)   rancher.io/local-path   Delete          WaitForFirstConsumer   false                  8s
+standard (default)         rancher.io/local-path   Delete          WaitForFirstConsumer   false                  6m5s
 ```
 
 ## Congratulations your are set.
 
+<img src="https://s3.amazonaws.com/datastaxtraining/CaaS/CQLSplash.png" height="200" />
 
-Clean up later
 
-```bash
-kind delete cluster --name kind-cassandra
-```
-
+![OK](https://github.com/[DataStax-Academy]/[kubernetes-workshop-online]/blob/[master]/0-setup-your-cluster/home.png?raw=true)
 
 
 
