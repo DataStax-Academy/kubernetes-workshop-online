@@ -7,8 +7,7 @@ In this repository, you'll find everything from the online Cassandra Developer W
 
 Feel free to bookmark this page for future reference!
 
-<img src="https://s3.amazonaws.com/datastaxtraining/CaaS/CQLSplash.png" height="200" />
-
+![OK](https://github.com/DataStax-Academy/kubernetes-workshop-online/blob/master/4-materials/images/00-screenplay.png?raw=true)
 
 ## Available Materials
 

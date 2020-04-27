@@ -1,7 +1,6 @@
 # Setting your cluster up
 
-
-<img src="https://s3.amazonaws.com/datastaxtraining/CaaS/CQLSplash.png" height="200" />
+![OK](https://github.com/DataStax-Academy/kubernetes-workshop-online/blob/master/0-setup-your-cluster/screenshots/home.png?raw=true)
 
 ## Prerequisites
 
@@ -201,10 +200,6 @@ standard (default)         rancher.io/local-path   Delete          WaitForFirstC
 
 ## Congratulations your are set.
 
-<img src="https://s3.amazonaws.com/datastaxtraining/CaaS/CQLSplash.png" height="200" />
-
-
-![OK](https://github.com/DataStax-Academy/kubernetes-workshop-online/blob/master/0-setup-your-cluster/screenshots/home.png?raw=true)
 
 ![OK](https://github.com/DataStax-Academy/kubernetes-workshop-online/blob/master/0-setup-your-cluster/screenshots/pic1.png?raw=true)
 
