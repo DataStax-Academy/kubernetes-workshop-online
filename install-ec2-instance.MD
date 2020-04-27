@@ -17,12 +17,14 @@ Security group or nginx as reverse proxy
 
 Create the keypair.pem file, store locally, and setup limit access `chmod 700`
 
-Connect
+- **Connect**
+
 ```
 ssh -i <my_keypari_file>.pem ec2-user@<dns>.us-east-2.compute.amazonaws.com
 ```
 
-Update
+- **Update**
+
 ```
 sudo yum update
 ```
@@ -31,7 +33,9 @@ sudo yum update
 
 ### Docker
 
-Installation Steps from https://linoxide.com/linux-how-to/how-to-install-docker-on-centos/
+- **Installation**
+
+Steps from https://linoxide.com/linux-how-to/how-to-install-docker-on-centos/
 
 ```bash
 sudo yum remove docker \
@@ -54,7 +58,7 @@ sudo systemctl enable --now docker
 systemctl status  docker
 ```
 
-Validation: 
+- **Validation:**
 
 ```bash
 sudo usermod -aG docker $USER
@@ -67,7 +71,7 @@ docker -v
 
 ### Docker Compose
 
-Installation: 
+- **Installation:**
 
 ```bash
 sudo curl -L "https://github.com/docker/compose/releases/download/1.23.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
@@ -75,7 +79,7 @@ sudo curl -L "https://github.com/docker/compose/releases/download/1.23.2/docker-
 sudo chmod +x /usr/local/bin/docker-compose
 ```
 
-Validation:
+- **Validation:**
 
 ```bash
 docker-compose -v
@@ -83,7 +87,7 @@ docker-compose -v
 
 ### Kubectl
 
-Installation: 
+- **Installation:**
 
 ```bash
 curl -LO https://storage.googleapis.com/kubernetes-release/release/`curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt`/bin/linux/amd64/kubectl
@@ -95,7 +99,7 @@ sudo mv ./kubectl /usr/local/bin/kubectl
 kubectl version --client
 ```
 
-Validation:
+- **Validation:**
 
 ```bash
 kubectl version --client
@@ -104,7 +108,7 @@ kubectl version --client
 
 ### Kind
 
-Installation:
+- **Installation:**
 
 ```bash
 curl -Lo ./kind https://github.com/kubernetes-sigs/kind/releases/download/v0.7.0/kind-$(uname)-amd64
@@ -112,7 +116,7 @@ chmod +x ./kind
 sudo mv ./kind /usr/local/bin/kind
 ```
 
-Validation:
+- **Validation:**
 
 ```bash
 kind get clusters
@@ -120,13 +124,13 @@ kind get clusters
 
 ### Git
 
-Installation:
+- **Installation:**
 
 ```bash
 sudo yum install git
 ```
 
-Validation and working document:
+- **Validation and working document:**
 
 ```bash
 git clone https://github.com/DataStax-Academy/kubernetes-workshop-online.git
@@ -135,7 +139,7 @@ cd kubernetes-workshop-online
 
 ### BASH
 
-Override the prompt:
+- **Override the prompt:**
 
 ```bash
 export PS1="\[\033[31m\]\u\[\033[00m\]@\[\033[32m\]\h\[\033[00m\]:\[\033[34m\]\w\[\033[00m\]> "
@@ -143,11 +147,11 @@ export PS1="\[\033[31m\]\u\[\033[00m\]@\[\033[32m\]\h\[\033[00m\]:\[\033[34m\]\w
 
 ### Web SSH
 
-Installation:
+- **Installation:**
+
 ```
 TODO
 ```
 
-### DONE read for the workshop
 
 
