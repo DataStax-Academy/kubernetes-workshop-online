@@ -273,7 +273,314 @@ The above example can be customized to suit your environment and saved as `02-st
 
 You can apply that file and get the resulting storage classes from Kubernetes.
 
+```basha
+![OK](https://github.com/DataStax-Academy/kubernetes-workshop-online/blob/master/4-materials/images/00-screenplay.png?raw=true)
+
+# Create a Kubernetes Cluster
+
+This guide will show you how to install a **Kubernetes** cluster on a single machine in order to later, deploy an Apache Cassandra™ database. It be composed of one *master* and multiple *workers*. 
+
+## 1. Install Docker
+
+![docker](https://github.com/DataStax-Academy/kubernetes-workshop-online/blob/master/4-materials/images/docker32.png?raw=true) 
+
+Docker is an open-source project that automates the deployment of software applications inside containers by providing an additional layer of abstraction and automation of OS-level virtualization on Linux.
+
+![Windows](https://github.com/DataStax-Academy/kubernetes-workshop-online/blob/master/4-materials/images/windows32.png?raw=true) : To install on **windows** please use the following installer [Docker Dekstop for Windows Installer](https://download.docker.com/win/stable/Docker%20Desktop%20Installer.exe)
+
+![osx](https://github.com/DataStax-Academy/kubernetes-workshop-online/blob/master/4-materials/images/mac32.png?raw=true) : To install on **MAC OS** please use the following installer [Docker Dekstop for MAC Installer](https://download.docker.com/mac/stable/Docker.dmg) or use [homebrew](https://docs.brew.sh/Installation) with the following commands:
 ```bash
+# Fetch latest version of homebrew and formula.
+brew update              
+# Tap the Caskroom/Cask repository from Github using HTTPS.
+brew tap caskroom/cask                
+# Searches all known Casks for a partial or exact match.
+brew search docker                    
+# Displays information about the given Cask
+brew cask info docker
+# Install the given cask.
+brew cask install docker              
+# Remove any older versions from the cellar.
+brew cleanup
+# Validate installation
+docker -v
+```
+
+![linux](https://github.com/DataStax-Academy/kubernetes-workshop-online/blob/master/4-materials/images/linux32.png?raw=true) : To install on linux (centOS) you can use the following commands
+
+```bash
+# Remove if already install
+sudo yum remove docker \
+                  docker-client \
+                  docker-client-latest \
+                  docker-common \
+                  docker-latest \
+                  docker-latest-logrotate \
+                  docker-logrotate \
+                  docker-engine
+# Utils
+sudo yum install -y yum-utils
+# Adding docker-ce repo
+sudo dnf config-manager --add-repo=https://download.docker.com/linux/centos/docker-ce.repo
+# Install
+sudo dnf -y  install docker-ce --nobest
+# Enable service
+sudo systemctl enable --now docker
+# Get Status
+systemctl status  docker
+
+# Logout....Lougin
+exit
+# Create user
+sudo usermod -aG docker $USER
+newgrp docker
+
+# Validation
+docker images
+docker run hello-world
+docker -v
+```
+
+## 2. Install Docker Compose
+
+Please refer to [Reference Documentation](https://docs.docker.com/compose/install/) if you have for more detailed instructions.
+
+![Windows](https://github.com/DataStax-Academy/kubernetes-workshop-online/blob/master/4-materials/images/windows32.png?raw=true) : Already **included** in the previous package *Docker for Windows*
+
+![osx](https://github.com/DataStax-Academy/kubernetes-workshop-online/blob/master/4-materials/images/mac32.png?raw=true) : Already **included** in the previous package *Docker for Mac*
+
+![linux](https://github.com/DataStax-Academy/kubernetes-workshop-online/blob/master/4-materials/images/linux32.png?raw=true) To install on linux (centOS) you can use the following commands
+
+```bash
+# Download deliverable and move to target location
+sudo curl -L "https://github.com/docker/compose/releases/download/1.23.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+# Allow execution
+sudo chmod +x /usr/local/bin/docker-compose
+```
+
+## 2. Install Kubernetes, `Kubectl`
+
+Please refer to [Reference Documentation](https://kubernetes.io/docs/tasks/tools/install-kubectl/) if you have for more detailed instructions.
+
+![Windows](https://github.com/DataStax-Academy/kubernetes-workshop-online/blob/master/4-materials/images/windows32.png?raw=true) : To install on **windows** please use the following installer [Kubectl for Windows](https://storage.googleapis.com/kubernetes-release/release/v1.18.0/bin/windows/amd64/kubectl.exe)
+
+![osx](https://github.com/DataStax-Academy/kubernetes-workshop-online/blob/master/4-materials/images/mac32.png?raw=true) : To install on **MAC OS** please use the following [homebrew](https://docs.brew.sh/Installation) commands:
+
+```bash
+brew install kubectl
+```
+![linux](https://github.com/DataStax-Academy/kubernetes-workshop-online/blob/master/4-materials/images/linux32.png?raw=true) To install on linux (centOS) you can use the following commands
+
+```bash
+# Download binary and move to /bin
+curl -LO "https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/darwin/amd64/kubectl"
+# Make the file executable
+chmod +x ./kubectl
+# Move the binary in to your PATH.
+sudo mv ./kubectl /usr/local/bin/kubectl
+#Test to ensure the version you installed is up-to-date:
+kubectl version --client
+``
+
+## A - KIND
+
+- **A1 - Installation**
+
+Installation procedure for different OS are detailed here
+https://kind.sigs.k8s.io/docs/user/quick-start/
+
+```bash
+
+# Installation on MAC
+brew install kind
+
+# Check existing Kind clusters
+kind get clusters
+```
+
+*Expected output*
+
+```
+No kind clusters found.
+```
+
+- **A2 - Create a KIND cluster**
+
+The Cassandra operator will create a node per worker. As such we need to initialize a cluster with at leat 3 workers. In the following configuration we went up to 5.
+
+```bash
+# Apply the configuration (1 master, 5 workers)
+kind create cluster --name kind-cassandra --config ./0-setup-your-cluster/01-kind-config.yaml
+```
+
+*Expected output*
+
+```
+Creating cluster "kind-cassandra" ...
+ ✓ Ensuring node image (kindest/node:v1.17.0) 🖼
+ ✓ Preparing nodes 📦 📦 📦 📦  
+ ✓ Writing configuration 📜 
+ ✓ Starting control-plane 🕹️ 
+ ✓ Installing CNI 🔌 
+ ✓ Installing StorageClass 💾 
+ ✓ Joining worker nodes 🚜 
+Set kubectl context to "kind-kind-cassandra"
+You can now use your cluster with:
+kubectl cluster-info --context kind-kind-cassandra
+Have a question, bug, or feature request? Let us know! https://kind.sigs.k8s.io/#community 🙂
+```
+
+- **A3 Check your k8s cluster**
+
+```bash
+# Show the new created cluster
+kind get clusters
+```
+
+*Expected output*
+
+```
+kind-cassandra
+```
+
+- **A4 - Link with Kubectl**
+
+```bash
+kubectl cluster-info --context kind-kind-cassandra
+```
+
+*Expected output*
+
+```
+Kubernetes master is running at https://127.0.0.1:45451
+KubeDNS is running at https://127.0.0.1:45451/api/v1/namespaces/kube-system/services/kube-dns:dns/proxy
+To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
+```
+
+- **A5 - List cluster nodes nodes with `kubectl`**
+
+```bash
+kubectl get nodes
+```
+
+*Expected output*
+
+```
+NAME                           STATUS   ROLES    AGE    VERSION
+kind-cassandra-control-plane   Ready    master   2m4s   v1.17.0
+kind-cassandra-worker          Ready    <none>   86s    v1.17.0
+kind-cassandra-worker2         Ready    <none>   88s    v1.17.0
+kind-cassandra-worker3         Ready    <none>   88s    v1.17.0
+kind-cassandra-worker4         Ready    <none>   88s    v1.17.0
+kind-cassandra-worker5         Ready    <none>   88s    v1.17.0
+```
+
+## B - NAMESPACE AND STORAGECLASS
+
+- **B1 - Create namespace**
+
+Cass-operator is built to watch over pods running Casandra or DSE in a Kubernetes namespace. Create a namespace for the cluster. For the rest of this guide, we will be using the namespace `cass-operator`. Adjust further commands as necessary to match the namespace you defined.
+
+```
+kubectl create ns cass-operator
+```
+
+*Expected output*
+
+```
+namespace/cass-operator created
+```
+
+- **B2 - List storage class**
+
+Kubernetes uses the `StorageClass` resource as an abstraction layer between pods needing persistent storage and the storage resources that a specific Kubernetes cluster can provide. We recommend using the fastest type of networked storage available. Let's create one for your environment.
+
+```
+kubectl get storageclass
+```
+
+*Expected output*
+
+```
+NAME                 PROVISIONER             RECLAIMPOLICY   VOLUMEBINDINGMODE      ALLOWVOLUMEEXPANSION   AGE
+standard (default)   rancher.io/local-path   Delete          WaitForFirstConsumer   false                  11m
+```
+
+- **B3 - Describe a storage class**
+
+```
+kubectl describe storageclass standard
+```
+
+*Expected Ouput*
+
+```
+Name:            standard
+IsDefaultClass:  Yes
+Annotations:     kubectl.kubernetes.io/last-applied-configuration={"apiVersion":"storage.k8s.io/v1","kind":"StorageClass","metadata":{"annotations":{"storageclass.kubernetes.io/is-default-class":"true"},"name":"standard"},"provisioner":"rancher.io/local-path","reclaimPolicy":"Delete","volumeBindingMode":"WaitForFirstConsumer"}
+,storageclass.kubernetes.io/is-default-class=true
+Provisioner:           rancher.io/local-path
+Parameters:            <none>
+AllowVolumeExpansion:  <unset>
+MountOptions:          <none>
+ReclaimPolicy:         Delete
+VolumeBindingMode:     WaitForFirstConsumer
+Events:                <none>
+```
+
+- **B4 - Clone the default storage class and name it `server-storage`**
+
+
+Sample for my local instance (*to be adapted*).
+
+```yaml
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  annotations:
+    storageclass.kubernetes.io/is-default-class: "true"
+  name: server-storage
+provisioner: rancher.io/local-path
+reclaimPolicy: Delete
+volumeBindingMode: WaitForFirstConsumer
+```
+
+The above example can be customized to suit your environment and saved as `02-storageclass-kind.yaml`. For the rest of this guide, we'll assume you've defined a `StorageClass` and named it `server-storage`. 
+
+- **B5 - Apply the new policy**
+
+You can apply that file and get the resulting storage classes from Kubernetes.
+
+```bash
+kubectl -n cass-operator apply -f ./0-setup-your-cluster/02-storageclass-kind.yaml
+```
+
+- **B6 - View policy result**
+
+```
+kubectl -n cass-operator get storageClass
+```
+
+*Expected Ouput*
+```
+NAME                       PROVISIONER             RECLAIMPOLICY   VOLUMEBINDINGMODE      ALLOWVOLUMEEXPANSION   AGE
+workshop-cassandra-storage (default)   rancher.io/local-path   Delete          WaitForFirstConsumer   false                  31m
+standard (default)         rancher.io/local-path   Delete          WaitForFirstConsumer   false                  88m
+```
+
+## Congratulations your are set.
+
+
+Clean up later
+
+```bash
+kind delete cluster --name kind-cassandra
+```
+
+
+
+
+
 kubectl -n cass-operator apply -f ./0-setup-your-cluster/02-storageclass-kind.yaml
 ```
 
