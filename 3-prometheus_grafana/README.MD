@@ -4,7 +4,7 @@
 
 At this point we expect you to have successfully complete section #0 and section #1. Section #2 is all about visualization and optional.
 
-## 1. Clean up Section 2 cluster
+## 1. Clean up cluster defined in previous sections
 
 In this section we want to illustrate the `Dse Metrics Exporter`. As such we would need to run a cluster of DataStax Enterprise nodes and not Cassandra OSS node (yet). We will clean up the `dc1` we created in previous section. In the CRD there is a property named `stopped` to set to true and apply the new yaml, that's it.
 
@@ -45,20 +45,19 @@ kubectl get svc -n cass-operator --show-labels=true
 
 This project is a component of the Operator Framework, an open source toolkit to manage Kubernetes native applications, called Operators, in an effective, automated, and scalable way. Read more in the introduction blog post and learn about practical use cases at OLM-Book.
 
-OLM extends *Kubernetes* to provide a declarative way to install, manage, and upgrade Operators and their dependencies in a cluster. It provides the following features:
+OLM extends *Kubernetes* to provide a declarative way to install, manage, and upgrade Operators and their dependencies in a cluster. You can find more information in the [reference documentation](https://github.com/operator-framework/operator-lifecycle-manager)
 
-```
-export namespace=cass-operator
-```
-
-```
-echo $namespace
+📘 **2a. Set env var `namespace`**
+```bash
+$ export namespace=cass-operator
+$ echo $namespace
 ```
 
+📘 **2b.Install OLM**
+```bash
+$ ./3-prometheus_grafana/install-olm.sh 0.14.1
 ```
-./3-prometheus_grafana/install-olm.sh 0.14.1
-```
-
+📗 **Expected output**
 ```
 customresourcedefinition.apiextensions.k8s.io/clusterserviceversions.operators.coreos.com created
 customresourcedefinition.apiextensions.k8s.io/installplans.operators.coreos.com created
@@ -88,8 +87,13 @@ Package server phase: Succeeded
 deployment "packageserver" successfully rolled out
 ```
 
-
 ## 3. Install Pronetheus Operator
+
+The Prometheus Operator makes the Prometheus configuration Kubernetes native and manages and operates Prometheus and Alertmanager clusters. It is a piece of the puzzle regarding full end-to-end monitoring. 
+
+`kube-prometheus` combines the Prometheus Operator with a collection of manifests to help getting started with monitoring Kubernetes itself and applications running on top of it. You can find more information in the [reference documentation](https://github.com/coreos/prometheus-operator)
+
+📘 **3a. Install Operator**
 
 ```bash
 kubectl -n cass-operator create -f ./3-prometheus_grafana/prometheus/operator.yaml
@@ -99,23 +103,23 @@ kubectl -n cass-operator apply -f ./3-prometheus_grafana/prometheus/instance.yam
 
 ## 4. Install Grafana Operator
 
+A Kubernetes Operator based on the Operator SDK for creating and managing Grafana instances. The Operator is available on Operator Hub. It can deploy and manage a Grafana instance on Kubernetes and OpenShift. The following features are supported:
+- Install Grafana to a namespace
+- Import Grafana dashboards from the same or other namespaces
+- Import Grafana datasources from the same namespace
+- Install Plugins (panels) defined as dependencies of dashboards
+
+📘 **4a. Install Operator**
 ```bash
 kubectl -n cass-operator create -f ./3-prometheus_grafana/grafana/operator.yaml
 ```
 
-```
-kubectl get svc -n cass-operator --show-labels=true
-NAME                                  TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)             AGE     LABELS
-cass-operator-metrics                 ClusterIP   10.96.254.17    <none>        8383/TCP,8686/TCP   6m50s   name=cass-operator
-cassandradatacenter-webhook-service   ClusterIP   10.96.44.146    <none>        443/TCP             8m12s   name=cass-operator-webhook
-grafana-operator-metrics              ClusterIP   10.96.104.188   <none>        8080/TCP            6m13s   name=grafana-operator
-prometheus-operated                   ClusterIP   None            <none>        9090/TCP            67s     operated-prometheus=true
-```
-
+📘 **4b.Install DataSource to read from prometheus**
 ```bash
 kubectl -n cass-operator create -f ./3-prometheus_grafana/grafana/datasource.yaml
 ```
 
+📘 **4c.Install dashboards for DSE and prometheus**
 ```bash
 kubectl -n cass-operator apply -f ./3-prometheus_grafana/grafana/dse-analytics.dashboard.yaml
 kubectl -n cass-operator apply -f ./3-prometheus_grafana/grafana/dse-cluster-condensed.dashboard.yaml
@@ -125,14 +129,16 @@ kubectl -n cass-operator apply -f ./3-prometheus_grafana/grafana/prometheus-metr
 kubectl -n cass-operator apply -f ./3-prometheus_grafana/grafana/system-metrics.dashboard.yaml
 ```
 
+📘 **4d.Install Grafana instance**
 ```bash
 kubectl -n cass-operator apply -f ./3-prometheus_grafana/grafana/instance.yaml
 ```
 
+📘 **4e. Show labels in the namespace**
 ```
 kubectl get svc -n cass-operator --show-labels=true
 ```
-
+📗 **Expected output**
 ```
 NAME                                  TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)             AGE     LABELS
 cass-operator-metrics                 ClusterIP   10.96.254.17    <none>        8383/TCP,8686/TCP   10m     name=cass-operator
@@ -142,24 +148,27 @@ grafana-service                       ClusterIP   10.96.240.129   <none>        
 prometheus-operated                   ClusterIP   None            <none>        9090/TCP            4m56s   operated-prometheus=true
 ```
 
+📘 **4f. Forward Ports**
+
+Note: In cloud based environment you may need to access dedicated URL and not port 3000 as we forwarded url to cope with security constraints.
+
 ```bash
 kubectl -n cass-operator port-forward service/grafana-service 3000:3000
 kubectl -n cass-operator port-forward service/prometheus-operated 9090:9090
 ```
 
-## 5. Start Dse Cluster
+## 5. Start DSE Cluster
 
-
+📘 **5a.Start the 3 DSE nodes clusters**
 ```bash
 kubectl -n cass-operator apply -f ./3-prometheus_grafana/dse/dse-mini.yaml
 ```
 
+📘 **5b.Watch evolution it might need some time**
 ```bash
 watch kubectl -n cass-operator get pods -l cassandra.datastax.com/cluster=cluster2
 ```
-
-*Expected output:*
-
+📗 **Expected output after a few min**
 ```
 NAME                         READY   STATUS    RESTARTS   AGE
 cluster2-dc2-default-sts-0   2/2     Running   0          6m55s
@@ -167,16 +176,19 @@ cluster2-dc2-default-sts-1   2/2     Running   0          6m55s
 cluster2-dc2-default-sts-2   2/2     Running   0          6m55s
 ```
 
-Get Side-Car
+📘 **5c.Have a look in the logs of a pod**
 
 ```bash
 kubectl -n cass-operator logs cluster2-dc2-default-sts-0 -c cassandra
 ```
 
-## 6. Browse the Cluster
+## 6. Browse DSE Cluster
+
+We will redo the command from section 1 to enter the cluster and show some information we may go faster here.
+
+📘 **6a.Have a look in the logs of a pod**
 
 Credential Shenanigans
-
 ```bash
 kubectl -n cass-operator get secret cluster2-superuser -o yaml
 ```
