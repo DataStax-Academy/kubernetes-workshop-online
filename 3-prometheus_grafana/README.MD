@@ -257,7 +257,7 @@ If you show UI from grafana and prometheus you might notice than the screens are
 
 📘 **7a. Apply this configuration**
 ```bash
-kubectl -n cass-operator apply -f ./3-prometheus_grafana/dse-mini-enablemetrics.yaml
+kubectl -n cass-operator apply -f ./3-prometheus_grafana/dse/dse-mini-enablemetrics.yaml
 ```
 
 📘 **7b. Apply this configuration**
