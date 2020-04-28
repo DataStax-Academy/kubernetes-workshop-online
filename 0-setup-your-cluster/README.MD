@@ -7,13 +7,11 @@ This guide will show you how to install a **Kubernetes** cluster on a single mac
 
 ## 1. Install Docker
 
-![docker](https://github.com/DataStax-Academy/kubernetes-workshop-online/blob/master/4-materials/images/docker32.png?raw=true) 
-
 Docker is an open-source project that automates the deployment of software applications inside containers by providing an additional layer of abstraction and automation of OS-level virtualization on Linux.
 
 ![Windows](https://github.com/DataStax-Academy/kubernetes-workshop-online/blob/master/4-materials/images/windows32.png?raw=true) : To install on **windows** please use the following installer [Docker Dekstop for Windows Installer](https://download.docker.com/win/stable/Docker%20Desktop%20Installer.exe)
 
-![osx](https://github.com/DataStax-Academy/kubernetes-workshop-online/blob/master/4-materials/images/mac32.png?raw=true) : To install on **MAC OS** please use the following installer [Docker Dekstop for MAC Installer](https://download.docker.com/mac/stable/Docker.dmg) or use [homebrew](https://docs.brew.sh/Installation) with the following commands:
+![osx](https://github.com/DataStax-Academy/kubernetes-workshop-online/blob/master/4-materials/images/mac32.png?raw=true) : To install on **MAC OS**  use [Docker Dekstop for MAC Installer](https://download.docker.com/mac/stable/Docker.dmg) or [homebrew](https://docs.brew.sh/Installation) with following commands:
 ```bash
 # Fetch latest version of homebrew and formula.
 brew update              
@@ -32,7 +30,6 @@ docker -v
 ```
 
 ![linux](https://github.com/DataStax-Academy/kubernetes-workshop-online/blob/master/4-materials/images/linux32.png?raw=true) : To install on linux (centOS) you can use the following commands
-
 ```bash
 # Remove if already install
 sudo yum remove docker \
@@ -45,7 +42,8 @@ sudo yum remove docker \
                   docker-engine
 # Utils
 sudo yum install -y yum-utils
-# Adding docker-ce repo
+
+# Add docker-ce repo
 sudo dnf config-manager --add-repo=https://download.docker.com/linux/centos/docker-ce.repo
 # Install
 sudo dnf -y  install docker-ce --nobest
@@ -68,78 +66,92 @@ docker -v
 
 ## 2. Install Docker Compose
 
-Please refer to [Reference Documentation](https://docs.docker.com/compose/install/) if you have for more detailed instructions.
+Docker Compose is a tool for defining and running multi-container Docker applications. It uses YAML files to configure the application's services and performs the creation and start-up process of all the containers with a single command. The `docker-compose` CLI utility allows users to run commands on multiple containers at once, for example, building images, scaling containers, running containers that were stopped, and more. Please refer to [Reference Documentation](https://docs.docker.com/compose/install/) if you have for more detailed instructions.
 
 ![Windows](https://github.com/DataStax-Academy/kubernetes-workshop-online/blob/master/4-materials/images/windows32.png?raw=true) : Already **included** in the previous package *Docker for Windows*
 
 ![osx](https://github.com/DataStax-Academy/kubernetes-workshop-online/blob/master/4-materials/images/mac32.png?raw=true) : Already **included** in the previous package *Docker for Mac*
 
-![linux](https://github.com/DataStax-Academy/kubernetes-workshop-online/blob/master/4-materials/images/linux32.png?raw=true) To install on linux (centOS) you can use the following commands
+![linux](https://github.com/DataStax-Academy/kubernetes-workshop-online/blob/master/4-materials/images/linux32.png?raw=true) : To install on linux (centOS) you can use the following commands
 
 ```bash
 # Download deliverable and move to target location
 sudo curl -L "https://github.com/docker/compose/releases/download/1.23.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+
 # Allow execution
 sudo chmod +x /usr/local/bin/docker-compose
 ```
 
-## 2. Install Kubernetes, `Kubectl`
+## 3. Install Kubernetes command-line tool (Kubectl)
 
-Please refer to [Reference Documentation](https://kubernetes.io/docs/tasks/tools/install-kubectl/) if you have for more detailed instructions.
+The Kubernetes command-line tool, `kubectl`, allows you to run commands against Kubernetes clusters. You can use kubectl to deploy applications, inspect and manage cluster resources, and view logs. Please refer to [Reference Documentation](https://kubernetes.io/docs/tasks/tools/install-kubectl/) for more detailed instructions.
 
 ![Windows](https://github.com/DataStax-Academy/kubernetes-workshop-online/blob/master/4-materials/images/windows32.png?raw=true) : To install on **windows** please use the following installer [Kubectl for Windows](https://storage.googleapis.com/kubernetes-release/release/v1.18.0/bin/windows/amd64/kubectl.exe)
 
 ![osx](https://github.com/DataStax-Academy/kubernetes-workshop-online/blob/master/4-materials/images/mac32.png?raw=true) : To install on **MAC OS** please use the following [homebrew](https://docs.brew.sh/Installation) commands:
-
 ```bash
 brew install kubectl
 ```
-![linux](https://github.com/DataStax-Academy/kubernetes-workshop-online/blob/master/4-materials/images/linux32.png?raw=true) To install on linux (centOS) you can use the following commands
 
+![linux](https://github.com/DataStax-Academy/kubernetes-workshop-online/blob/master/4-materials/images/linux32.png?raw=true) To install on linux (centOS) you can use the following commands
 ```bash
 # Download binary and move to /bin
 curl -LO "https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/darwin/amd64/kubectl"
+
 # Make the file executable
 chmod +x ./kubectl
+
 # Move the binary in to your PATH.
 sudo mv ./kubectl /usr/local/bin/kubectl
+
 #Test to ensure the version you installed is up-to-date:
 kubectl version --client
-``
+```
 
-## A - KIND
+## 4. Install Kind
 
-- **A1 - Installation**
+kind (`kind`)cis a tool for running local Kubernetes clusters using Docker container “nodes”. kind was primarily designed for testing Kubernetes itself, but may be used for local development or CI. Please refer to [Reference Documentation](https://kind.sigs.k8s.io/docs/user/quick-start/) for more detailed instructions.
 
-Installation procedure for different OS are detailed here
-https://kind.sigs.k8s.io/docs/user/quick-start/
-
+![Windows](https://github.com/DataStax-Academy/kubernetes-workshop-online/blob/master/4-materials/images/windows32.png?raw=true) : To install on **windows** please dowmload the [executable](https://kind.sigs.k8s.io/dl/v0.7.0/kind-windows-amd64) and place it on the PATH. You can also use **[Chocolatey](https://chocolatey.org/packages/kind)** very clever package manager for windows.
 ```bash
+choco install kind
+```
 
-# Installation on MAC
-brew install kind
+![osx](https://github.com/DataStax-Academy/kubernetes-workshop-online/blob/master/4-materials/images/mac32.png?raw=true) : To install on **MAC OS** please use the following [homebrew](https://docs.brew.sh/Installation) commands:
+```bash
+brew install kubectl
+```
 
+![linux](https://github.com/DataStax-Academy/kubernetes-workshop-online/blob/master/4-materials/images/linux32.png?raw=true) To install on linux (centOS) you can use the following commands
+```bash
+curl -Lo ./kind https://github.com/kubernetes-sigs/kind/releases/download/v0.7.0/kind-$(uname)-amd64
+chmod +x ./kind
+sudo mv ./kind /usr/local/bin/kind
+```
+
+Check that the installation is successful. Starting for now all command will be the same on each platform, as a such we will keep providing a single command. We will mark with a blue book the command (📘) and a green book (📗) to show expected result.
+
+📘 **Command to execute**
+```bash
 # Check existing Kind clusters
 kind get clusters
 ```
 
-*Expected output*
-
-```
+📗 **Expected output**
+```bash
 No kind clusters found.
 ```
 
-- **A2 - Create a KIND cluster**
+## 5. Create a KIND cluster
 
-The Cassandra operator will create a node per worker. As such we need to initialize a cluster with at leat 3 workers. In the following configuration we went up to 5.
+During this workshop we will work with a cluster with multiple Cassandra nodes. As of now the Cassandra Operator needs a worker per node. We will create a Kubernetes cluster based on the [following configuration](0-setup-your-cluster/01-kind-config.yaml) **1 master, 5 workers** to be able to spawn some multi nodes clusters. This is also the reason why `kind` has been preferred as `minikube` another solution to run Kubernetes locally but handling only a managin a single worker.
 
+📘 **5a. Execute the following command to create a kubernetes cluster**
 ```bash
-# Apply the configuration (1 master, 5 workers)
 kind create cluster --name kind-cassandra --config ./0-setup-your-cluster/01-kind-config.yaml
 ```
 
-*Expected output*
-
+📗 **Expected output**
 ```
 Creating cluster "kind-cassandra" ...
  ✓ Ensuring node image (kindest/node:v1.17.0) 🖼
@@ -155,41 +167,32 @@ kubectl cluster-info --context kind-kind-cassandra
 Have a question, bug, or feature request? Let us know! https://kind.sigs.k8s.io/#community 🙂
 ```
 
-- **A3 Check your k8s cluster**
-
+📘 **5b. Execute the following command to visualize the list of your clusters**
 ```bash
 # Show the new created cluster
 kind get clusters
 ```
-
-*Expected output*
-
+📗 **Expected output**
 ```
 kind-cassandra
 ```
 
-- **A4 - Link with Kubectl**
-
+📘 **5c. Execute the following command to link `kubectl` with our new cluster**
 ```bash
 kubectl cluster-info --context kind-kind-cassandra
 ```
-
-*Expected output*
-
+📗 **Expected output**
 ```
 Kubernetes master is running at https://127.0.0.1:45451
 KubeDNS is running at https://127.0.0.1:45451/api/v1/namespaces/kube-system/services/kube-dns:dns/proxy
 To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
 ```
 
-- **A5 - List cluster nodes nodes with `kubectl`**
-
+📘 **5d. Execute the following command to list nodes in k8s cluster**
 ```bash
 kubectl get nodes
 ```
-
-*Expected output*
-
+📗 **Expected output**
 ```
 NAME                           STATUS   ROLES    AGE    VERSION
 kind-cassandra-control-plane   Ready    master   2m4s   v1.17.0
@@ -200,32 +203,26 @@ kind-cassandra-worker4         Ready    <none>   88s    v1.17.0
 kind-cassandra-worker5         Ready    <none>   88s    v1.17.0
 ```
 
-## B - NAMESPACE AND STORAGECLASS
+## 6. Create namespace and storageClass
 
-- **B1 - Create namespace**
+Cass-operator is built to watch over pods running Casandra or DSE in a Kubernetes namespace. We need to create a namespace for the cluster. For the rest of this guide, we will be using the namespace `cass-operator`. You can pick any name you like but you would have to change the commands accordingly.
 
-Cass-operator is built to watch over pods running Casandra or DSE in a Kubernetes namespace. Create a namespace for the cluster. For the rest of this guide, we will be using the namespace `cass-operator`. Adjust further commands as necessary to match the namespace you defined.
-
-```
+📘 **6a. Execute the following command to create the namespace**
+```bash
 kubectl create ns cass-operator
 ```
-
-*Expected output*
-
+📗 **Expected output**
 ```
 namespace/cass-operator created
 ```
 
-- **B2 - List storage class**
-
 Kubernetes uses the `StorageClass` resource as an abstraction layer between pods needing persistent storage and the storage resources that a specific Kubernetes cluster can provide. We recommend using the fastest type of networked storage available. Let's create one for your environment.
 
-```
+📘 **6a. Execute the following command to list existing storageClass**
+```bash
 kubectl get storageclass
 ```
-
-*Expected output*
-
+📗 **Expected output**
 ```
 NAME                 PROVISIONER             RECLAIMPOLICY   VOLUMEBINDINGMODE      ALLOWVOLUMEEXPANSION   AGE
 standard (default)   rancher.io/local-path   Delete          WaitForFirstConsumer   false                  11m
