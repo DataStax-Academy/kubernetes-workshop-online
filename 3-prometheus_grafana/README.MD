@@ -307,6 +307,11 @@ kubectl -n cass-operator apply -f ./3-prometheus_grafana/dse/dse-mini-stop.yaml
 kubectl -n cass-operator delete -f ./3-prometheus_grafana/dse/dse-mini-stop.yaml
 ```
 
+## 8a. Delete the namespace and clean up the rest of the artifacts
+```bash
+kubectl delete ns cass-operator
+```
+
 ## Congratulations, your are done.
 
 **We love your feedback, please consider to stay with us with Mentimeter live survey**
