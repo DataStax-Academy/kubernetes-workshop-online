@@ -1,10 +1,51 @@
-# PROMETHEUS
+![OK](https://github.com/DataStax-Academy/kubernetes-workshop-online/blob/master/4-materials/images/00-screenplay.png?raw=true)
 
+# Monitor a Cluster
 
-We suppose here that you have docker and kubernetes installed
+At this point we expect you to have successfully complete section #0 and section #1. Section #2 is all about visualization and optional.
 
+## 1. Clean up Section 2 cluster
 
-## A - Installation
+In this section we want to illustrate the `Dse Metrics Exporter`. As such we would need to run a cluster of DataStax Enterprise nodes and not Cassandra OSS node (yet). We will clean up the `dc1` we created in previous section. In the CRD there is a property named `stopped` to set to true and apply the new yaml, that's it.
+
+📘 **1a. Check what's new in the yaml file**
+```bash
+diff ./1-cassandra/14-cassandra-cluster-3nodes-newconfig.yaml ./1-cassandra/15-cassandra-cluster-stop.yaml 
+13a14
+```
+📗 **Expected output**
+```
+>   stopped: true
+22c23
+<   config:    
+---
+>   config:
+```
+📘 **1b. Properly the Cassandra `dc1` datacenter**
+```bash
+kubectl -n cass-operator apply -f ./1-cassandra/15-cassandra-cluster-stop.yaml
+```
+📘 **1c. Monitor progression in the command line**
+```bash
+watch kubectl -n cass-operator get pods
+```
+📘 **1d. Delete the Cassandra `dc1` datacenter**
+```bash
+kubectl -n cass-operator delete -f ./1-cassandra/15-cassandra-cluster-stop.yaml
+```
+📘 **1e. Monitor progression in the command line**
+```bash
+watch kubectl -n cass-operator get pods
+```
+
+```
+kubectl get svc -n cass-operator --show-labels=true
+```
+## 2. Install Operator Lifecycle Manager (OLM)
+
+This project is a component of the Operator Framework, an open source toolkit to manage Kubernetes native applications, called Operators, in an effective, automated, and scalable way. Read more in the introduction blog post and learn about practical use cases at OLM-Book.
+
+OLM extends *Kubernetes* to provide a declarative way to install, manage, and upgrade Operators and their dependencies in a cluster. It provides the following features:
 
 ```
 export namespace=cass-operator
@@ -47,19 +88,8 @@ Package server phase: Succeeded
 deployment "packageserver" successfully rolled out
 ```
 
-STOP CASSANDRA:
 
-```bash
-kubectl -n cass-operator apply -f ./1-cassandra/15-cassandra-cluster-stop.yaml
-```
-
-```bash
-watch kubectl -n cass-operator get pods
-```
-
-```
-kubectl get svc -n cass-operator --show-labels=true
-```
+## 3. Install Pronetheus Operator
 
 ```bash
 kubectl -n cass-operator create -f ./3-prometheus_grafana/prometheus/operator.yaml
@@ -67,12 +97,14 @@ kubectl -n cass-operator apply -f ./3-prometheus_grafana/prometheus/service_moni
 kubectl -n cass-operator apply -f ./3-prometheus_grafana/prometheus/instance.yaml
 ```
 
+## 4. Install Grafana Operator
+
 ```bash
 kubectl -n cass-operator create -f ./3-prometheus_grafana/grafana/operator.yaml
 ```
 
 ```
-cedricklunven@clunhost:~/dev/WORKSPACES/DATASTAX/kubernetes-workshop-online> kubectl get svc -n cass-operator --show-labels=true
+kubectl get svc -n cass-operator --show-labels=true
 NAME                                  TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)             AGE     LABELS
 cass-operator-metrics                 ClusterIP   10.96.254.17    <none>        8383/TCP,8686/TCP   6m50s   name=cass-operator
 cassandradatacenter-webhook-service   ClusterIP   10.96.44.146    <none>        443/TCP             8m12s   name=cass-operator-webhook
@@ -115,8 +147,11 @@ kubectl -n cass-operator port-forward service/grafana-service 3000:3000
 kubectl -n cass-operator port-forward service/prometheus-operated 9090:9090
 ```
 
+## 5. Start Dse Cluster
+
+
 ```bash
-kubectl -n cass-operator apply -f ./3-prometheus_grafana/dse-mini.yaml
+kubectl -n cass-operator apply -f ./3-prometheus_grafana/dse/dse-mini.yaml
 ```
 
 ```bash
@@ -137,6 +172,8 @@ Get Side-Car
 ```bash
 kubectl -n cass-operator logs cluster2-dc2-default-sts-0 -c cassandra
 ```
+
+## 6. Browse the Cluster
 
 Credential Shenanigans
 
@@ -205,28 +242,27 @@ DESCRIBE KEYSPACES;
 
 ```
 exit
-```
-
-```
 exit
 ```
 
-```
-kubectl -n cass-operator delete -f ./3-prometheus_grafana/dse-cluster.yaml
-```
-
+## 7. Let's blow your mind now
 
 ```bash
 kubectl -n cass-operator apply -f ./3-prometheus_grafana/dse-mini-enablemetrics.yaml
 ```
 
+## 8. Stop and clean up
 
 ```bash
 kubectl -n cass-operator apply -f ./3-prometheus_grafana/dse-mini-stop.yaml
 ```
 
 
-## Congratulations your are set.
+
+## Congratulations, your are done for this exercise.
+
+![OK](https://github.com/DataStax-Academy/kubernetes-workshop-online/blob/master/4-materials/images/welldone.jpg?raw=true)
+
 
 
 
