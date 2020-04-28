@@ -55,15 +55,19 @@ Copy/Paste the generated token to login you can now browse the UI
 
 
 📘 **2a.Welcome page (namespace `default`)**
+
 ![OK](https://github.com/DataStax-Academy/kubernetes-workshop-online/blob/master/4-materials/images/21-ui-default.png?raw=true)
 
 📘 **2b. Our namespace `cass-operator` (so cool)**
+
 ![OK](https://github.com/DataStax-Academy/kubernetes-workshop-online/blob/master/4-materials/images/22-ui-home.png?raw=true)
 
 📘 **2c. Navigate in the pods**
+
 ![OK](https://github.com/DataStax-Academy/kubernetes-workshop-online/blob/master/4-materials/images/23-ui-pods.png?raw=true)
 
 📘 **2d. Navigate in the replicat set**
+
 ![OK](https://github.com/DataStax-Academy/kubernetes-workshop-online/blob/master/4-materials/images/24-ui-replicatsets.png?raw=true)
 
 You can now kill the `kubectl proxy` and delete the resources associated to gain some resources for later..... we might need it, time to get serious.
