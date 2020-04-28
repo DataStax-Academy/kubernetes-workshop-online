@@ -186,16 +186,12 @@ kubectl -n cass-operator logs cluster2-dc2-default-sts-0 -c cassandra
 
 We will redo the command from section 1 to enter the cluster and show some information we may go faster here.
 
-📘 **6a.Have a look in the logs of a pod**
-
-Credential Shenanigans
+📘 **6a. Extract credentials**
 ```bash
 kubectl -n cass-operator get secret cluster2-superuser -o yaml
 ```
-
-*Expected output*
-
-```
+📗 **Sample output**
+```yaml
 apiVersion: v1
 data:
   password: SHREUXBsLUlMRXNJeDl1Skdla0FKQ1dCYVBhOHFhWUJwS3gwRzBucHdIVENkLUlnU3VCcFdB
@@ -209,28 +205,21 @@ metadata:
   selfLink: /api/v1/namespaces/cass-operator/secrets/cluster2-superuser
   uid: 70b7b4ad-494a-4e27-a566-d7e935cdeabc
 type: Opaque
-
 ```
 
-Get user/password
-
+📘 **6b. Get user/password**
 ```
 echo Y2x1c3RlcjItc3VwZXJ1c2Vy | base64 -d && echo ""
 echo SHREUXBsLUlMRXNJeDl1Skdla0FKQ1dCYVBhOHFhWUJwS3gwRzBucHdIVENkLUlnU3VCcFdB | base64 -d && echo ""
 ```
 
-Enter a node:
-
+📘 **6c. Enter the node and show status**
 ```bash
 kubectl -n cass-operator exec -it cluster2-dc2-default-sts-0  -- /bin/bash
+dsetool status
 ```
-
+📗 **Sample output**
 ```bash
-dsetool
-```
-
-```
-^Cdse@cluster2-dc2-default-sts-0:~$ dsetool status
 DC: dc2             Workload: Cassandra       Graph: no     
 ======================================================
 Status=Up/Down
@@ -241,41 +230,86 @@ UN   10.244.1.6       105.82 KiB       59.34%               -8221998853083547597
 UN   10.244.4.9       158.14 KiB       67.55%               -720713414843373246                          default      0.30         
 UN   10.244.2.10      136.32 KiB       73.11%               5265284122577758891                          default      0.40         
 ```
+You can note that now we are working with a `dc2` but not part of the same cluster as before.
 
-CQLSH
-
+📘 **6d. CQLSH...**
 ```bash
 cqlsh cluster2-dc2-service -u cluster2-superuser -p HtDQpl-ILEsIx9uJGekAJCWBaPa8qaYBpKx0G0npwHTCd-IgSuBpWA
 ```
-
 ```sql
 DESCRIBE KEYSPACES;
 ```
-
+📘 **6e.Go back to `kubectl`**
 ```
 exit
 exit
 ```
 
-## 7. Let's blow your mind now
+## 7. Let's blow your mind
 
+If you show UI from grafana and prometheus you might notice than the screens are still empty. This is **expected**. Let's enable metrics collections by adding a couple of line to the dse cluster definition `yaml`
+
+```yaml
+10-write-prom-conf:
+  enabled: true
+  port: 9103
+  staleness-delta: 300
+```
+
+📘 **7a. Apply this configuration**
 ```bash
 kubectl -n cass-operator apply -f ./3-prometheus_grafana/dse-mini-enablemetrics.yaml
 ```
 
+📘 **7b. Apply this configuration**
+Wait for the configuration to be deploy in round robin
+```bash
+watch kubectl -n cass-operator get pods -l cassandra.datastax.com/cluster=cluster2
+```
+
+📘 **7c. Prometheus target**
+
+Prometheus UI should be available at `http://localhost:9090` but it mays vary on the cloud instance depending on port forwarding and coping with security on EC2 machines.
+
+- The cluster is detected but nodes are not sending metrics yet:
+
+![OK](https://github.com/DataStax-Academy/kubernetes-workshop-online/blob/master/4-materials/images/prometheus-target-empty.png?raw=true)
+
+- Let the party begins
+
+![OK](https://github.com/DataStax-Academy/kubernetes-workshop-online/blob/master/4-materials/images/prometheus-target-up.png?raw=true)
+
+- You can now graph some metrics withing prometheus 
+
+![OK](https://github.com/DataStax-Academy/kubernetes-workshop-online/blob/master/4-materials/images/prometheus-graph-up.png?raw=true)
+
+📘 **7d. Grafana UI**
+
+Grafana should be available at `http://localhost:3000` but it mays vary on the cloud instance depending on port forwarding and coping with security on EC2 machines. Login and password are provided in the `yaml` files, they are `admin` and `secret`.
+
+- Metrics starting to pull to Grafana
+
+![OK](https://github.com/DataStax-Academy/kubernetes-workshop-online/blob/master/4-materials/images/grafana-starting.png?raw=true)
+
+- After a bit of time
+
+![OK](https://github.com/DataStax-Academy/kubernetes-workshop-online/blob/master/4-materials/images/grafana-jvm.png?raw=true)
+
+- You can browse dashboardsm there are a lot, here is the JVM
+
+![OK](https://github.com/DataStax-Academy/kubernetes-workshop-online/blob/master/4-materials/images/grafana-up.png?raw=true)
+
 ## 8. Stop and clean up
+
+As before you may want to stop properly the cluster and then stop everything with the following commands.
 
 ```bash
 kubectl -n cass-operator apply -f ./3-prometheus_grafana/dse-mini-stop.yaml
+kubectl -n cass-operator delete -f ./3-prometheus_grafana/dse-mini-stop.yaml
 ```
 
+## Congratulations, your are done.
 
-
-## Congratulations, your are done for this exercise.
+**We love your feedbacl, please consider to stay with us with Mentimeter live survey**
 
 ![OK](https://github.com/DataStax-Academy/kubernetes-workshop-online/blob/master/4-materials/images/welldone.jpg?raw=true)
-
-
-
-
-
