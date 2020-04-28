@@ -274,7 +274,7 @@ Prometheus UI should be available at `http://localhost:9090` but it mays vary on
 
 ![OK](https://github.com/DataStax-Academy/kubernetes-workshop-online/blob/master/4-materials/images/prometheus-target-empty.png?raw=true)
 
-- Let the party begins
+- Let the party begin
 
 ![OK](https://github.com/DataStax-Academy/kubernetes-workshop-online/blob/master/4-materials/images/prometheus-target-up.png?raw=true)
 
