@@ -86,7 +86,7 @@ Package server phase: Succeeded
 deployment "packageserver" successfully rolled out
 ```
 
-## 3. Install Pronetheus Operator
+## 3. Install Prometheus Operator
 
 The Prometheus Operator makes the Prometheus configuration Kubernetes native and manages and operates Prometheus and Alertmanager clusters. It is a piece of the puzzle regarding full end-to-end monitoring. 
 
