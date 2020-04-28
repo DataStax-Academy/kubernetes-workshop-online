@@ -625,7 +625,7 @@ exit
 
 📘 **5a. Use diff to show new config**
 ```bash
-diff ./1-cassandra/13-cassandra-cluster-3nodes.yaml ./1-cassandra/14-cassandra-cluster-3nodes-newConfig.yaml 
+diff ./1-cassandra/13-cassandra-cluster-3nodes.yaml ./1-cassandra/14-cassandra-cluster-3nodes-newconfig.yaml 
 ```
 📗 **Sample output**
 ```
@@ -635,7 +635,7 @@ diff ./1-cassandra/13-cassandra-cluster-3nodes.yaml ./1-cassandra/14-cassandra-c
 
 📘 **5b. Apply the configuration**
 ```bash
-kubectl -n cass-operator apply -f ./1-cassandra/14-cassandra-cluster-3nodes-newConfig.yaml 
+kubectl -n cass-operator apply -f ./1-cassandra/14-cassandra-cluster-3nodes-newconfig.yaml 
 ```
 
 📘 **5c. Watch the rolling update of the operator**
