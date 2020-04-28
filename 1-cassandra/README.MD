@@ -7,7 +7,7 @@ We suppose here that you have docker, kubernetes and kind ready
 - **A1 - Install the operator**
 
 ```bash
-# Apply the manisfest
+# Apply the manifest
 kubectl -n cass-operator apply -f ./1-cassandra/11-install-cass-operator-v1.1.yaml
 ```
 
