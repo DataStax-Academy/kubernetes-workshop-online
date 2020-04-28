@@ -303,8 +303,8 @@ Grafana should be available at `http://localhost:3000` but it mays vary on the c
 As before you may want to stop properly the cluster and then stop everything with the following commands.
 
 ```bash
-kubectl -n cass-operator apply -f ./3-prometheus_grafana/dse-mini-stop.yaml
-kubectl -n cass-operator delete -f ./3-prometheus_grafana/dse-mini-stop.yaml
+kubectl -n cass-operator apply -f ./3-prometheus_grafana/dse/dse-mini-stop.yaml
+kubectl -n cass-operator delete -f ./3-prometheus_grafana/dse/dse-mini-stop.yaml
 ```
 
 ## Congratulations, your are done.
