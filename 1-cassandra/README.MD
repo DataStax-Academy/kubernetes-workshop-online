@@ -324,7 +324,7 @@ cluster1-superuser@cqlsh>
 cluster1-superuser@cqlsh> CREATE KEYSPACE IF NOT EXISTS killrvideo1 WITH replication = {'class': 'NetworkTopologyStrategy', 'dc1': '1'} AND durable_writes = true;
 ```
 
-📘 **3g. Describe keyspaces with a CQL command**
+📘 **3h. Describe keyspaces with a CQL command**
 ```bash
 cluster1-superuser@cqlsh> describe keyspaces;
 ```
@@ -334,7 +334,7 @@ system_schema  system              system_traces
 system_auth    system_distributed  killrvideo1 
 ```
 
-📘 **3h. Create tables and insert some data**
+📘 **3i. Create tables and insert some data**
 ```bash
 cluster1-superuser@cqlsh> use killrvideo1;
 cluster1-superuser@cqlsh:killrvideo1>
@@ -385,7 +385,7 @@ INSERT INTO killrvideo1.users (userid, created_date, firstname, lastname, email)
 //  VALUES(33333333-3333-3333-3333-333333333333, 'cl@datastax.com', 'Fr@nc3L0v3$C@ss@ndr@');
 ```
 
-📘 **3i. Show the `users` tables**
+📘 **3j. Show the `users` tables**
 ```bash
 cluster1-superuser@cqlsh:killrvideo1> select * from users;
 ```
@@ -410,7 +410,7 @@ cluster1-superuser@cqlsh:killrvideo1> select * from videos;
 cluster1-superuser@cqlsh:killrvideo1> 
 ```
 
-📘 **3j. Exit both `cqlsh` and the pod to go back to kubectl**
+📘 **3k. Exit both `cqlsh` and the pod to go back to kubectl**
 ```bash
 exit
 exit
@@ -419,7 +419,7 @@ exit
 ## 4 - Scale up the clusters
 
 
-📘 **4a. Compare files `12-cassandra-cluster-1nodes` and  `13-cassandra-cluster-3nodes` **
+📘 **4a. Compare files `12-cassandra-cluster-1nodes` and  `13-cassandra-cluster-3nodes`**
 ```bash
 diff ./1-cassandra/12-cassandra-cluster-1nodes.yaml ./1-cassandra/13-cassandra-cluster-3nodes.yaml
 ```
