@@ -11,7 +11,6 @@ In this section we want to illustrate the `Dse Metrics Exporter`. As such we wou
 📘 **1a. Check what's new in the yaml file**
 ```bash
 diff ./1-cassandra/14-cassandra-cluster-3nodes-newconfig.yaml ./1-cassandra/15-cassandra-cluster-stop.yaml 
-13a14
 ```
 📗 **Expected output**
 ```
