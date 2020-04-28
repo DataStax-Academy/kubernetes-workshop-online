@@ -418,74 +418,71 @@ exit
 
 ## 4 - Scale up the clusters
 
-## D - Scale up the clusters
 
-
-- **D1 - Look at this file where we changed the size**
-
+📘 **4a. Compare files `12-cassandra-cluster-1nodes` and  `13-cassandra-cluster-3nodes` **
 ```bash
 diff ./1-cassandra/12-cassandra-cluster-1nodes.yaml ./1-cassandra/13-cassandra-cluster-3nodes.yaml
 ```
-
-```
+📗 **Expected output**
+```bash
 13c13
 <   size: 1
 ---
 >   size: 3
-
-- **D3 - Apply the new configuration**
 ```
 
-- **D2 - Apply the change**
-
-
+📘 **4b. Execute the following command to Apply the new configuration**
 ```bash
 kubectl -n cass-operator apply -f ./1-cassandra/13-cassandra-cluster-3nodes.yaml
 ```
-
-Check evolution live
-
+📘 **4c. Execute the following command to watch evolution of the cluster**
+We may need about 10 minutes to have all pods both started and ready.
 ```bash
-kubectl -n cass-operator get pod
+watch kubectl -n cass-operator get pod
 ```
 
-*Expected output*
-
+📗 **Sample output**
 ```
 NAME                             READY   STATUS             RESTARTS   AGE
 cass-operator-657cb5c695-q9psl   1/1     Running            0          23m
 cluster1-dc1-default-sts-0       2/2     Running            0          18m
 cluster1-dc1-default-sts-1       0/2     ImagePullBackOff   0          84s
 cluster1-dc1-default-sts-2       0/2     ImagePullBackOff   0          84s
-
+---
 
 NAME                             READY   STATUS             RESTARTS   AGE
 cass-operator-657cb5c695-q9psl   1/1     Running            0          25m
 cluster1-dc1-default-sts-0       2/2     Running            0          20m
 cluster1-dc1-default-sts-1       1/2     ImagePullBackOff   0          3m20s
 cluster1-dc1-default-sts-2       1/2     Running            0          3m20s
+---
 
 NAME                             READY   STATUS    RESTARTS   AGE
 cass-operator-657cb5c695-q9psl   1/1     Running   0          29m
 cluster1-dc1-default-sts-0       2/2     Running   0          25m
 cluster1-dc1-default-sts-1       2/2     Running   0          8m11s
 cluster1-dc1-default-sts-2       1/2     Running   0          8m11s
+---
 
 NAME                             READY   STATUS    RESTARTS   AGE
 cass-operator-657cb5c695-q9psl   1/1     Running   0          34m
 cluster1-dc1-default-sts-0       2/2     Running   0          30m
 cluster1-dc1-default-sts-1       2/2     Running   0          13m
 cluster1-dc1-default-sts-2       2/2     Running   0          13m
+---
 ```
 
-
-
+📘 **4d. Execute the command to login to a pod with SSH**
 ```bash
 kubectl -n cass-operator exec -it cluster1-dc1-default-sts-0  -- /bin/bash
 ```
 
+📘 **4e. Display status of the cluster**
 ```bash
 root@cluster1-dc1-default-sts-0:/# nodetool status
+```
+📗 **Sample output**
+```
 Datacenter: dc1
 ===============
 Status=Up/Down
@@ -496,10 +493,11 @@ UN  10.244.1.3  91.34 KiB  1            76.9%             ee712d14-401d-4db6-b7c
 UN  10.244.2.3  114.89 KiB  1            17.4%             ae2fe508-dde0-43c2-ad14-42973e6c9821  default
 ```
 
+📘 **4f. Execute the command to login ton `cqlsh`**
 ```bash
 cqlsh cluster1-dc1-service.cass-operator -u cluster1-superuser -p h5iMHm8RpoOfSXUXNiGT-WPfJa7tbwV9plj4ITYwHyghxJlQO2ySUQ
 ```
-
+📗 **Sample output**
 ```bash
 Connected to cluster1 at cluster1-dc1-service.cass-operator:9042.
 [cqlsh 5.0.1 | Cassandra 3.11.6 | CQL spec 3.4.4 | Native protocol v4]
@@ -507,10 +505,11 @@ Use HELP for help.
 cluster1-superuser@cqlsh> 
 ```
 
-```bash
+📘 **4g. Describe the keyspace `killvideo1`**
+```sql
 describe keyspace killrvideo1;
 ```
-
+📗 **Sample output**
 ```sql
 CREATE KEYSPACE killrvideo1 WITH replication = {'class': 'NetworkTopologyStrategy', 'dc1': '1'}  AND durable_writes = true;
 
@@ -561,35 +560,45 @@ CREATE TABLE killrvideo1.videos (
     AND speculative_retry = '99PERCENTILE';
 ```
 
-```
+📘 **4h. Change the deplication factor of `killvideo1`**
+```sql
 alter keyspace killrvideo1 with replication={'class':'NetworkTopologyStrategy', 'dc1':3};
 ```
 
-```
+📘 **4i. Describe the keyspace `killvideo1`**
+```sql
 describe keyspace killrvideo1
 ```
-
-```
+📗 **Sample output**
+```sql
 CREATE KEYSPACE killrvideo1 WITH replication = {'class': 'NetworkTopologyStrategy', 'dc1': '3'}  AND durable_writes = true;
-
-//[...]
+// [...]
 ```
 
-```
+📘 **4j. Set the consistency level to `QUORUM`**
+```bash
 cluster1-superuser@cqlsh> CONSISTENCY QUORUM;
+```
+📗 **Sample output**
+```
 Consistency level set to QUORUM.
 ```
 
-```
+📘 **4k. Enable tracing in CQLSH console**
+```bash
 cluster1-superuser@cqlsh> tracing on;
+```
+📗 **Sample output**
+```
 Now Tracing is enabled
 ```
 
+📘 **4l. Show a record from the table `videos`**
 ```sql
 select * from killrvideo1.videos WHERE videoid=99999999-3333-3333-3333-333333333333;
 ```
-
-```
+📗 **Sample output**
+```bash
  videoid                              | added_date                      | description                                                             | location | location_type | name                | preview_image_location | tags | userid
 --------------------------------------+---------------------------------+-------------------------------------------------------------------------+----------+---------------+---------------------+------------------------+------+--------
  99999999-3333-3333-3333-333333333333 | 2020-04-24 11:57:08.828000+0000 | It may sound like he's cursing, but it's just that he's speaking French |     null |          null | Cedrick's Out-takes |                   null | null |   null
@@ -606,72 +615,77 @@ reparing statement [Native-Transport-Requests-1] | 2020-04-24 13:01:27.327000 | 
 reading data from /10.244.1.3 [Nat
 ```
 
-```
+📘 **4m. Exit both `cqlsh` and the pod to go back to kubectl**
+```bash
+exit
 exit
 ```
 
-```
-exit
-```
+## 5 - Change the Cassandra Configuration
 
-## E - Change Cassandra Configuration
-
-
+📘 **5a. Use diff to show new config**
 ```bash
 diff ./1-cassandra/13-cassandra-cluster-3nodes.yaml ./1-cassandra/14-cassandra-cluster-3nodes-newConfig.yaml 
 ```
-
+📗 **Sample output**
 ```
 26a27
 >       commitlog_sync_period_in_ms: 11000
 ```
 
+📘 **5b. Apply the configuration**
 ```bash
 kubectl -n cass-operator apply -f ./1-cassandra/14-cassandra-cluster-3nodes-newConfig.yaml 
 ```
 
+📘 **5c. Watch the rolling update of the operator**
 ```bash
-kubectl -n cass-operator get pod
+watch kubectl -n cass-operator get pod
 ```
-
+📗 **Sample output**
 ```
 NAME                             READY   STATUS        RESTARTS   AGE
 cass-operator-657cb5c695-q9psl   1/1     Running       0          92m
 cluster1-dc1-default-sts-0       2/2     Running       0          88m
 cluster1-dc1-default-sts-1       2/2     Running       0          71m
 cluster1-dc1-default-sts-2       2/2     Terminating   0          71m
-
+---
 
 NAME                             READY   STATUS        RESTARTS   AGE
 cass-operator-657cb5c695-q9psl   1/1     Running       0          94m
 cluster1-dc1-default-sts-0       2/2     Running       0          89m
 cluster1-dc1-default-sts-1       2/2     Terminating   0          72m
 cluster1-dc1-default-sts-2       2/2     Running       0          56s
-
+---
 
 NAME                             READY   STATUS        RESTARTS   AGE
 cass-operator-657cb5c695-q9psl   1/1     Running       0          95m
 cluster1-dc1-default-sts-0       2/2     Terminating   0          91m
 cluster1-dc1-default-sts-1       2/2     Running       0          42s
 cluster1-dc1-default-sts-2       2/2     Running       0          2m2s
-
-
-NAME                             READY   STATUS     RESTARTS   AGE
-cass-operator-657cb5c695-q9psl   1/1     Running    0          96m
-cluster1-dc1-default-sts-0       0/2     Init:0/1   0          3s
-cluster1-dc1-default-sts-1       2/2     Running    0          71s
-cluster1-dc1-default-sts-2       2/2     Running    0          2m31s
-
+---
 
 NAME                             READY   STATUS     RESTARTS   AGE
 cass-operator-657cb5c695-q9psl   1/1     Running    0          96m
 cluster1-dc1-default-sts-0       0/2     Init:0/1   0          3s
 cluster1-dc1-default-sts-1       2/2     Running    0          71s
 cluster1-dc1-default-sts-2       2/2     Running    0          2m31s
+---
+
+NAME                             READY   STATUS     RESTARTS   AGE
+cass-operator-657cb5c695-q9psl   1/1     Running    0          96m
+cluster1-dc1-default-sts-0       0/2     Init:0/1   0          3s
+cluster1-dc1-default-sts-1       2/2     Running    0          71s
+cluster1-dc1-default-sts-2       2/2     Running    0          2m31s
+---
 ```
 
+📘 **5d. Describe the datacenter resource**
+```bash
+kubectl -n cass-operator describe pods cluster1-dc1-default-sts-0
 ```
-cedricklunven@clunhost:~/dev/WORKSPACES/DATASTAX/kubernetes-workshop-online> kubectl -n cass-operator describe pods cluster1-dc1-default-sts-0
+📗 **Sample output**
+```
 Name:         cluster1-dc1-default-sts-0
 Namespace:    cass-operator
 Priority:     0
@@ -801,18 +815,28 @@ Events:
   Warning  Unhealthy  37s   kubelet, kind-cassandra-worker3  Readiness probe failed: HTTP probe failed with statuscode: 500
 ```
 
-```yaml
-{"cassandra-yaml":
-  {
+📗 **Specially check the `cassandra-yaml` value**
+```json
+{
+ "cassandra-yaml": {
     "authenticator":"org.apache.cassandra.auth.PasswordAuthenticator",
     "authorizer":"org.apache.cassandra.auth.CassandraAuthorizer",
     "commitlog_sync_period_in_ms":11000,
     "role_manager":"org.apache.cassandra.auth.CassandraRoleManager"
-  }
-,
-"cluster-info":{"name":"cluster1","seeds":"cluster1-seed-service"},"datacenter-info":{"name":"dc1"},"jvm-options":{"initial_heap_size":"800M","max_heap_size":"800M"}}
+  },
+ "cluster-info": {
+    "name":"cluster1",
+    "seeds":"cluster1-seed-service"
+ },
+ "datacenter-info":{
+    "name":"dc1"
+ },
+ "jvm-options":{
+   "initial_heap_size":"800M",
+   "max_heap_size":"800M"
+ }
+}
 ```
-
 
 ## Congratulations, your are done for this exercise.
 
