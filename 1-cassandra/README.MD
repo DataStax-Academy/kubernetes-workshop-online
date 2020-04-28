@@ -17,7 +17,7 @@ Within this guide, we have joined together a few Kubernetes resources into a sin
 
 Generally, `cluster-admin` privileges are required to register a CustomResourceDefinition (CRD). All privileges needed by the operator are present within the operator-manifests YAML. Note the operator does not require cluster-admin privileges, only the user defining the CRD requires those permissions.
 
-📘 **1a. Apply the manisfest**
+📘 **1a. Apply the manifest**
 Apply the manifest above, and wait for the deployment to become ready. You can watch the progress by getting the list of pods for the namespace, as demonstrated below:
 ```bash
 kubectl -n cass-operator apply -f ./1-cassandra/11-install-cass-operator-v1.1.yaml
