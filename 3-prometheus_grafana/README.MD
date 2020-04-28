@@ -300,7 +300,7 @@ Grafana should be available at `http://localhost:3000` but it mays vary on the c
 
 ## 8. Stop and clean up
 
-As before you may want to stop properly the cluster and then stop everything with the following commands.
+As before you may want to stop the cluster properly and then stop everything else with the following commands.
 
 ```bash
 kubectl -n cass-operator apply -f ./3-prometheus_grafana/dse/dse-mini-stop.yaml
@@ -314,6 +314,6 @@ kubectl delete ns cass-operator
 
 ## Congratulations, your are done.
 
-**We love your feedback, please consider to stay with us with Mentimeter live survey**
+**We love your feedback, please consider to stay with us for the Mentimeter live survey**
 
 ![OK](https://github.com/DataStax-Academy/kubernetes-workshop-online/blob/master/4-materials/images/welldone.jpg?raw=true)
