@@ -815,6 +815,7 @@ Events:
 
 
 ## Congratulations, your are done for this exercise.
+
 ![OK](https://github.com/DataStax-Academy/kubernetes-workshop-online/blob/master/4-materials/images/welldone.jpg?raw=true)
 
 
