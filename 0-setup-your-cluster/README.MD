@@ -249,7 +249,7 @@ Events:                <none>
 
 We are are interested in a few fields to intialize the `yaml` to create a storageClass. You can find more information in the [Reference Documentation](https://kubernetes.io/docs/concepts/storage/storage-classes/) and the [dedicated page](https://kubernetes.io/docs/tasks/administer-cluster/change-default-storage-class/#changing-the-default-storageclass) to edit those.
 
-This file should be adapted tor reflect your *Kubernetes* environment. We have several samples in the repository for [kind](0-setup-your-cluster/02-storageclass-kind.yaml), [Minikube](0-setup-your-cluster/02-storageclass-minikube.yaml) and [GKE](0-setup-your-cluster/02-storageclass-gke.yaml).
+This file should be adapted tor reflect your *Kubernetes* environment. We have several samples in the repository for [kind](02-storageclass-kind.yaml), [Minikube](03-storageclass-minikube.yaml) and [GKE](04-storageclass-gke.yaml).
 ```yaml
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
