@@ -309,6 +309,6 @@ kubectl -n cass-operator delete -f ./3-prometheus_grafana/dse/dse-mini-stop.yaml
 
 ## Congratulations, your are done.
 
-**We love your feedbacl, please consider to stay with us with Mentimeter live survey**
+**We love your feedback, please consider to stay with us with Mentimeter live survey**
 
 ![OK](https://github.com/DataStax-Academy/kubernetes-workshop-online/blob/master/4-materials/images/welldone.jpg?raw=true)
