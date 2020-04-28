@@ -1,6 +1,6 @@
 # Install Linux Box
 
-This document will give you steps use to setup the limuxBox Available sor this workshop
+This document will give you steps use to setup the linuxBox available for this workshop
 
 ## Requirements
 
