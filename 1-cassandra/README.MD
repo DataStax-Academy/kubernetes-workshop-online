@@ -1,19 +1,29 @@
-# Install Cassandra
 
-We suppose here that you have docker, kubernetes and kind ready
+![OK](https://github.com/DataStax-Academy/kubernetes-workshop-online/blob/master/4-materials/images/00-screenplay.png?raw=true)
 
-## A - INSTALL OPERATOR
+# Deploy a Cassandra Cluster with Cass Operator
 
-- **A1 - Install the operator**
+This guide will show you how to install a cassandra cluster of 3 nodes on your local machine. Please make sure to follow steps in previous section to setup the *kubernetes* environment. Each time we will mark with a blue book the command (📘) to execute and a green book (📗) to show expected result.
 
+## 1. Install Cass Operator
+
+Cass Operator simplifies the process of deploying and managing Cassandra or DSE in a Kubernetes cluster.
+
+Within this guide, we have joined together a few Kubernetes resources into a single YAML file needed to deploy the operator. This file defines the following:
+
+- `ServiceAccount`, `Role`, and `RoleBinding`to describe a user and set of permissions necessary to run the operator. In demo environments that don't have role-based access-control enabled, these extra steps are unnecessary but are harmless.
+- `CustomResourceDefinition` for the `CassandraDatacenter` resources used to configure clusters managed by the `cass-operator`.
+- Deployment to start the operator in a state where it waits and watches for CassandraDatacenter resources.
+
+Generally, `cluster-admin` privileges are required to register a CustomResourceDefinition (CRD). All privileges needed by the operator are present within the operator-manifests YAML. Note the operator does not require cluster-admin privileges, only the user defining the CRD requires those permissions.
+
+📘 **1a. Apply the manisfest**
+Apply the manifest above, and wait for the deployment to become ready. You can watch the progress by getting the list of pods for the namespace, as demonstrated below:
 ```bash
-# Apply the manisfest
 kubectl -n cass-operator apply -f ./1-cassandra/11-install-cass-operator-v1.1.yaml
 ```
-
-*Expected output*
-
-```
+📗 **Expected output**
+```bash
 namespace/cass-operator configured
 serviceaccount/cass-operator created
 secret/cass-operator-webhook-config created
@@ -27,27 +37,24 @@ deployment.apps/cass-operator created
 validatingwebhookconfiguration.admissionregistration.k8s.io/cassandradatacenter-webhook-registration created
 ```
 
-- **A2 - Look at created pod**
-
+📘 **1b. Execute this command to Wait for the pod to be ready**
+*`wath` is here optional but allows  auto-refresh of the command*
 ```bash
-kubectl -n cass-operator get pod
+watch kubectl -n cass-operator get pod
 ```
-
-*Expected output*
-
-```
+📗 **Expected output**
+```bash
 NAME                             READY   STATUS    RESTARTS   AGE
 cass-operator-657cb5c695-q9psl   1/1     Running   0          51s
 ```
 
-- **A3 - Describe operator pod, notive the CRD**
+In the output we can see a generated id here `657cb5c695-q9psl` it will be different for you, as such change the command lines accordingly to match your id.
 
+📘 **1c. Execute this command to describe the CRD**
 ```bash
-kubectl -n cass-operator describe pods cass-operator-657cb5c695-q9psl
+kubectl -n cass-operator describe pods cass-operator-YOURID
 ```
-
-*Expected output*
-
+📗 **Expected output**
 ```
 Name:         cass-operator-657cb5c695-q9psl
 Namespace:    cass-operator
@@ -112,37 +119,32 @@ Events:
   Normal  Started    2m7s   kubelet, kind-cassandra-worker  Started container cass-operator
 ```
 
-## B - CREATE THE CLUSTER
+The previous section created a new resource type in your Kubernetes cluster, the `CassandraDatacenter`. By adding `CassandraDatacenter` resources to your namespace, you can define a cluster topology for the operator to create and monitor.
 
+## 2. Create a single node cluster
 
-- **B1 - Create a single node cluster**
+Apply this file via `kubectl` and watch the list of pods as the operator deploys them. Completing a deployment may take several minutes per node.
 
+📘 **2a. Create the cluster**
 ```bash
 kubectl -n cass-operator apply -f ./1-cassandra/12-cassandra-cluster-1nodes.yaml
 ```
-
-- **B2 - Check that we are OK**
-
+📘 **2b. Watch progression**
 ```bash
-kubectl -n cass-operator get pod
+watch kubectl -n cass-operator get pod
 ```
-
-*Expected output:*
-
+📗 **Expected output**
 ```
 NAME                             READY   STATUS    RESTARTS   AGE
 cass-operator-657cb5c695-q9psl   1/1     Running   0          5m22s
 cluster1-dc1-default-sts-0       1/2     Running   0          50s
 ```
 
-- **B3 - Describe the CRD**
-
+📘 **2c. Execute the command to describe the datacenter**
 ```bash
 kubectl -n cass-operator describe cassdc dc1
 ```
-
-*Expected output:*
-
+📗 **Expected output**
 ```
 Name:         dc1
 Namespace:    cass-operator
@@ -224,19 +226,15 @@ Cassandra is rack-aware, and the racks parameter will configure the operator to 
 
 The size parameter is the number of nodes to run in the datacenter. For optimal performance, it's recommended to run only one server instance per Kubernetes worker node. The operator will enforce that limit, and pods may get stuck in the Pending status if there are insufficient Kubernetes workers available.
 
-
-## C - Connect to the cluster
-
-- **C1 - First we will need user and password coming form the secret**
+## 3. Browse your cluster
 
 By default, a cassandra superuser gets created by the operator. A Kubernetes secret will be created for it, named `<cluserName>-superuser`. It will contain username and password keys.
 
+📘 **3a. Execute the command to list secret  container user and password**
 ```bash
 kubectl -n cass-operator get secret cluster1-superuser -o yaml
 ```
-
-*Expected output*
-
+📗 **Expected output**
 ```yaml
 apiVersion: v1
 data:
@@ -253,56 +251,50 @@ metadata:
 type: Opaque
 ```
 
-Those values are encoded in base64, we need to decode:
+Spot the lines
+```bash
+  password: aDVpTUhtOFJwb09mU1hVWE5pR1QtV1BmSmE3dGJ3VjlwbGo0SVRZd0h5Z2h4SmxRTzJ5U1VR
+  username: Y2x1c3RlcjEtc3VwZXJ1c2Vy
+```  
 
+The password will be different for everyone (!). Please adapt with the following command lines to match your values.
+
+📘 **3b. Execute the command to decode username**
 ```bash
 echo Y2x1c3RlcjEtc3VwZXJ1c2Vy | base64 -d && echo ""
 ```
-
-*Expected output*
-
+📗 **Expected output**
 ```bash
 cluster1-superuser
 ```
-
 Not a surprise right ? Do the same for the password
 
+📘 **3c. Execute the command to decode password**
 ```bash
 echo aDVpTUhtOFJwb09mU1hVWE5pR1QtV1BmSmE3dGJ3VjlwbGo0SVRZd0h5Z2h4SmxRTzJ5U1VR | base64 -d && echo ""
 ```
-
-*Expected output*
-
+📗 **Sample output**
 ```bash
-h5iMHm8RpoOfSXUXNiGT-WPfJa7tbwV9plj4ITYwHyghxJlQO2ySUQ
+-WPfJa7tbwV9plj4ITYwHyghxJlQO2ySUQ
 ```
 
-- **C2 - Connect to SSH to one of the node**
-
-We are using the pod name `cluster1-dc1-default-sts-0`
-
+📘 **3d. Execute the command to login to a pod with SSH**
+We are using the pod name `cluster1-dc1-default-sts-0` listed with `get pods` command, make sure the pod name also exist for you.
 ```bash
 kubectl -n cass-operator exec -it cluster1-dc1-default-sts-0  -- /bin/bash
 ```
-
-*Expected output*
-
+📗 **Sample output**
 ```bash
 Defaulting container name to cassandra.
 Use 'kubectl describe pod/cluster1-dc1-default-sts-0 -n cass-operator' to see all of the containers in this pod.
 root@cluster1-dc1-default-sts-0:/#
 ```
 
-- **C3 - Display status of your cluster**
-
-Let's display the nature of our cluster:
-
+📘 **3e. Display status of your cluster with `nodetool`**
 ```bash
 root@cluster1-dc1-default-sts-0:/# nodetool status
 ```
-
-*Expected output*
-
+📗 **Sample output**
 ```
 Datacenter: dc1
 ===============
@@ -312,17 +304,14 @@ Status=Up/Down
 UN  10.244.2.3  65.3 KiB   100.0%            ae2fe508-dde0-43c2-ad14-42973e6c9821  3273667123371405452                      default
 ```
 
-- **C4 - Connect with CQLSH**
+We notice a working cluster with only 1 node. Let's dig into it. The operator makes a Kubernetes headless service available at `<clusterName>-<datacenterName>-service`. Any CQL client inside the Kubernetes cluster should be able to connect to `cluster1-dc1-service.cass-operator` and use the nodes in a round-robin fashion as contact points.
 
-The operator makes a Kubernetes headless service available at `<clusterName>-<datacenterName>-service`. Any CQL client inside the Kubernetes cluster should be able to connect to `cluster1-dc1-service.cass-operator` and use the nodes in a round-robin fashion as contact points.
-
-
+📘 **3f. Start a `cqlsh` console**
 ```bash
 cqlsh cluster1-dc1-service.cass-operator -u cluster1-superuser -p h5iMHm8RpoOfSXUXNiGT-WPfJa7tbwV9plj4ITYwHyghxJlQO2ySUQ
 ```
 
-*Expected output*
-
+📗 **Sample output**
 ```bash
 Connected to cluster1 at cluster1-dc1-service.cass-operator:9042.
 [cqlsh 5.0.1 | Cassandra 3.11.6 | CQL spec 3.4.4 | Native protocol v4]
@@ -330,30 +319,26 @@ Use HELP for help.
 cluster1-superuser@cqlsh> 
 ```
 
-Create a keyspace
-
+📘 **3g. Create a keyspace `killrvideo1` with a CQL command**
 ```bash
 cluster1-superuser@cqlsh> CREATE KEYSPACE IF NOT EXISTS killrvideo1 WITH replication = {'class': 'NetworkTopologyStrategy', 'dc1': '1'} AND durable_writes = true;
 ```
 
-Describe the keyspace
-
+📘 **3g. Describe keyspaces with a CQL command**
 ```bash
 cluster1-superuser@cqlsh> describe keyspaces;
-
+```
+📗 **Sample output**
+```bash
 system_schema  system              system_traces
 system_auth    system_distributed  killrvideo1 
 ```
 
-Use the keyspace
-
+📘 **3h. Create tables and insert some data**
 ```bash
 cluster1-superuser@cqlsh> use killrvideo1;
 cluster1-superuser@cqlsh:killrvideo1>
 ```
-
-Define the schema
-
 ```sql
 CREATE TABLE IF NOT EXISTS users (
     userid     uuid,
@@ -400,13 +385,12 @@ INSERT INTO killrvideo1.users (userid, created_date, firstname, lastname, email)
 //  VALUES(33333333-3333-3333-3333-333333333333, 'cl@datastax.com', 'Fr@nc3L0v3$C@ss@ndr@');
 ```
 
-Select result
-
-*Expected output*
-
-```
+📘 **3i. Show the `users` tables**
+```bash
 cluster1-superuser@cqlsh:killrvideo1> select * from users;
-
+```
+📗 **Sample output**
+```bash
  userid                               | created_date                    | email           | firstname | lastname
 --------------------------------------+---------------------------------+-----------------+-----------+-----------
  22222222-2222-2222-2222-222222222222 | 2020-04-24 11:57:08.858000+0000 | ez@datastax.com |      Eric |   Zietlow
@@ -426,13 +410,13 @@ cluster1-superuser@cqlsh:killrvideo1> select * from videos;
 cluster1-superuser@cqlsh:killrvideo1> 
 ```
 
-```
+📘 **3j. Exit both `cqlsh` and the pod to go back to kubectl**
+```bash
+exit
 exit
 ```
 
-```
-exit
-```
+## 4 - Scale up the clusters
 
 ## D - Scale up the clusters
 
@@ -830,11 +814,7 @@ Events:
 ```
 
 
-## Congratulations your are done for this exercise
-
-
-
-
-
+## Congratulations, your are done for this exercise.
+![OK](https://github.com/DataStax-Academy/kubernetes-workshop-online/blob/master/4-materials/images/welldone.jpg?raw=true)
 
 
