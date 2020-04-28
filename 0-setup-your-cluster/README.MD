@@ -223,19 +223,16 @@ Kubernetes uses the `StorageClass` resource as an abstraction layer between pods
 kubectl get storageclass
 ```
 📗 **Expected output**
-```
+```bash
 NAME                 PROVISIONER             RECLAIMPOLICY   VOLUMEBINDINGMODE      ALLOWVOLUMEEXPANSION   AGE
 standard (default)   rancher.io/local-path   Delete          WaitForFirstConsumer   false                  11m
 ```
 
-- **B3 - Describe a storage class**
-
-```
+📘 **6b. Execute the following command describe `default` storageClass**
+```bash
 kubectl describe storageclass standard
 ```
-
-*Expected Ouput*
-
+📗 **Expected output** (may vary)
 ```
 Name:            standard
 IsDefaultClass:  Yes
@@ -250,11 +247,9 @@ VolumeBindingMode:     WaitForFirstConsumer
 Events:                <none>
 ```
 
-- **B4 - Clone the default storage class and name it `server-storage`**
+We are are interested in a few fields to intialize the `yaml` to create a storageClass. You can find more information in the [Reference Documentation](https://kubernetes.io/docs/concepts/storage/storage-classes/) and the [dedicated page](https://kubernetes.io/docs/tasks/administer-cluster/change-default-storage-class/#changing-the-default-storageclass) to edit those.
 
-
-Sample for my local instance (*to be adapted*).
-
+This file should be adapted tor reflect your *Kubernetes* environment. We have several samples in the repository for [kind](0-setup-your-cluster/02-storageclass-kind.yaml), [Minikube](0-setup-your-cluster/02-storageclass-minikube.yaml) and [GKE](0-setup-your-cluster/02-storageclass-gke.yaml).
 ```yaml
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
@@ -267,38 +262,25 @@ reclaimPolicy: Delete
 volumeBindingMode: WaitForFirstConsumer
 ```
 
-The above example can be customized to suit your environment and saved as `02-storageclass-kind.yaml`. For the rest of this guide, we'll assume you've defined a `StorageClass` and named it `server-storage`. 
-
-- **B5 - Apply the new policy**
-
-You can apply that file and get the resulting storage classes from Kubernetes.
-
+📘 **6c. Execute the following command to create a new `storageClass` named `server-storage`**
+For the rest of this guide, we would assume you have defined a `StorageClass` and named it `server-storage`. 
 ```bash
 kubectl -n cass-operator apply -f ./0-setup-your-cluster/02-storageclass-kind.yaml
 ```
 
-- **B6 - View policy result**
-
+📘 **6d. Execute the following command to list the storageClass**
 ```
 kubectl -n cass-operator get storageClass
 ```
-
-*Expected Ouput*
+📗 **Expected output**
 ```
 NAME                       PROVISIONER             RECLAIMPOLICY   VOLUMEBINDINGMODE      ALLOWVOLUMEEXPANSION   AGE
 workshop-cassandra-storage (default)   rancher.io/local-path   Delete          WaitForFirstConsumer   false                  31m
 standard (default)         rancher.io/local-path   Delete          WaitForFirstConsumer   false                  88m
 ```
 
-## Congratulations your are set.
+## Congratulations, your are done for this exercise.
 
-
-Clean up later
-
-```bash
-kind delete cluster --name kind-cassandra
-```
-
-
+![OK](https://github.com/DataStax-Academy/kubernetes-workshop-online/blob/master/4-materials/images/welldone.jpg?raw=true)
 
 
