@@ -20,7 +20,7 @@ diff ./1-cassandra/14-cassandra-cluster-3nodes-newconfig.yaml ./1-cassandra/15-c
 ---
 >   config:
 ```
-📘 **1b. Properly the Cassandra `dc1` datacenter**
+📘 **1b. Properly stop the Cassandra `dc1` datacenter**
 ```bash
 kubectl -n cass-operator apply -f ./1-cassandra/15-cassandra-cluster-stop.yaml
 ```
