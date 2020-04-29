@@ -108,7 +108,33 @@ sudo mv ./kubectl /usr/local/bin/kubectl
 kubectl version --client
 ```
 
-## 4. Install Kind
+## 4. Install `watch`
+
+During the workshop some bootstrap can last for a few minutes and the utilty `watch` can come to he rescue to avoid typing the same command multiple times to see the evolutions.
+
+![Windows](https://github.com/DataStax-Academy/kubernetes-workshop-online/blob/master/4-materials/images/windows32.png?raw=true) : The utility does not exist on **windows** but this is quite easy to create your own `watch.bat` file containing :
+```bash
+@ECHO OFF
+:loop
+  cls
+  %*
+  timeout /t 5 > NUL
+goto loop
+```
+
+![osx](https://github.com/DataStax-Academy/kubernetes-workshop-online/blob/master/4-materials/images/mac32.png?raw=true) : To install on **MAC OS** please use the following [homebrew](https://docs.brew.sh/Installation) commands:
+```bash
+brew install watch
+```
+
+![linux](https://github.com/DataStax-Academy/kubernetes-workshop-online/blob/master/4-materials/images/linux32.png?raw=true) the utility is already installed in **centOS**
+
+```bash
+echo "Linux Rocks"
+```
+
+
+## 5. Install Kind
 
 kind (`kind`)cis a tool for running local Kubernetes clusters using Docker container “nodes”. kind was primarily designed for testing Kubernetes itself, but may be used for local development or CI. Please refer to [Reference Documentation](https://kind.sigs.k8s.io/docs/user/quick-start/) for more detailed instructions.
 
@@ -142,11 +168,11 @@ kind get clusters
 No kind clusters found.
 ```
 
-## 5. Create a KIND cluster
+## 6. Create a KIND cluster
 
 During this workshop we will work with a cluster with multiple Cassandra nodes. As of now the Cassandra Operator needs a worker per node. We will create a Kubernetes cluster based on the [following configuration](0-setup-your-cluster/01-kind-config.yaml) **1 master, 5 workers** to be able to spawn some multi nodes clusters. This is also the reason why `kind` has been preferred as `minikube` another solution to run Kubernetes locally but handling only a managin a single worker.
 
-📘 **5a. Execute the following command to create a kubernetes cluster**
+📘 **6a. Execute the following command to create a kubernetes cluster**
 ```bash
 kind create cluster --name kind-cassandra --config ./0-setup-your-cluster/01-kind-config.yaml
 ```
@@ -167,7 +193,7 @@ kubectl cluster-info --context kind-kind-cassandra
 Have a question, bug, or feature request? Let us know! https://kind.sigs.k8s.io/#community 🙂
 ```
 
-📘 **5b. Execute the following command to visualize the list of your clusters**
+📘 **6b. Execute the following command to visualize the list of your clusters**
 ```bash
 # Show the new created cluster
 kind get clusters
@@ -177,7 +203,7 @@ kind get clusters
 kind-cassandra
 ```
 
-📘 **5c. Execute the following command to link `kubectl` with our new cluster**
+📘 **6c. Execute the following command to link `kubectl` with our new cluster**
 ```bash
 kubectl cluster-info --context kind-kind-cassandra
 ```
@@ -188,7 +214,7 @@ KubeDNS is running at https://127.0.0.1:45451/api/v1/namespaces/kube-system/serv
 To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
 ```
 
-📘 **5d. Execute the following command to list nodes in k8s cluster**
+📘 **6d. Execute the following command to list nodes in k8s cluster**
 ```bash
 kubectl get nodes
 ```
@@ -203,11 +229,11 @@ kind-cassandra-worker4         Ready    <none>   88s    v1.17.0
 kind-cassandra-worker5         Ready    <none>   88s    v1.17.0
 ```
 
-## 6. Create namespace and storageClass
+## 7. Create namespace and storageClass
 
 Cass-operator is built to watch over pods running Casandra or DSE in a Kubernetes namespace. We need to create a namespace for the cluster. For the rest of this guide, we will be using the namespace `cass-operator`. You can pick any name you like but you would have to change the commands accordingly.
 
-📘 **6a. Execute the following command to create the namespace**
+📘 **7a. Execute the following command to create the namespace**
 ```bash
 kubectl create ns cass-operator
 ```
@@ -218,7 +244,7 @@ namespace/cass-operator created
 
 Kubernetes uses the `StorageClass` resource as an abstraction layer between pods needing persistent storage and the storage resources that a specific Kubernetes cluster can provide. We recommend using the fastest type of networked storage available. Let's create one for your environment.
 
-📘 **6a. Execute the following command to list existing storageClass**
+📘 **7b. Execute the following command to list existing storageClass**
 ```bash
 kubectl get storageclass
 ```
@@ -228,7 +254,7 @@ NAME                 PROVISIONER             RECLAIMPOLICY   VOLUMEBINDINGMODE  
 standard (default)   rancher.io/local-path   Delete          WaitForFirstConsumer   false                  11m
 ```
 
-📘 **6b. Execute the following command describe `default` storageClass**
+📘 **7c. Execute the following command describe `default` storageClass**
 ```bash
 kubectl describe storageclass standard
 ```
@@ -262,13 +288,13 @@ reclaimPolicy: Delete
 volumeBindingMode: WaitForFirstConsumer
 ```
 
-📘 **6c. Execute the following command to create a new `storageClass` named `server-storage`**
+📘 **7d. Execute the following command to create a new `storageClass` named `server-storage`**
 For the rest of this guide, we would assume you have defined a `StorageClass` and named it `server-storage`. 
 ```bash
 kubectl -n cass-operator apply -f ./0-setup-your-cluster/02-storageclass-kind.yaml
 ```
 
-📘 **6d. Execute the following command to list the storageClass**
+📘 **7e. Execute the following command to list the storageClass**
 ```
 kubectl -n cass-operator get storageClass
 ```

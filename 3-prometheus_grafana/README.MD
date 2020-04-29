@@ -98,7 +98,7 @@ The Prometheus Operator makes the Prometheus configuration Kubernetes native and
 kubectl -n cass-operator create -f ./3-prometheus_grafana/prometheus/operator.yaml
 ```
 
-📘 **3b. Install Service Monitor **
+📘 **3b. Install Service Monitor**
 ```
 kubectl -n cass-operator apply -f ./3-prometheus_grafana/prometheus/service_monitor.yaml
 ```
@@ -285,6 +285,8 @@ watch kubectl -n cass-operator get pods -l cassandra.datastax.com/cluster=cluste
 
 Prometheus UI should be available at `http://localhost:9090` but it mays vary on the cloud instance depending on port forwarding and coping with security on EC2 machines.
 
+You can navigate to `Status` dropdown in the topbar and select `target` to see the following:
+
 - The cluster is detected but nodes are not sending metrics yet:
 
 ![OK](https://github.com/DataStax-Academy/kubernetes-workshop-online/blob/master/4-materials/images/prometheus-target-empty.png?raw=true)
@@ -309,7 +311,7 @@ Grafana should be available at `http://localhost:3000` but it mays vary on the c
 
 ![OK](https://github.com/DataStax-Academy/kubernetes-workshop-online/blob/master/4-materials/images/grafana-jvm.png?raw=true)
 
-- You can browse dashboardsm there are a lot, here is the JVM
+- You can browse dashboards there are a lot, here is the JVM. Only the dashboards using the datasource we created before will have data. The one starting with `dse`.
 
 ![OK](https://github.com/DataStax-Academy/kubernetes-workshop-online/blob/master/4-materials/images/grafana-up.png?raw=true)
 
@@ -317,14 +319,25 @@ Grafana should be available at `http://localhost:3000` but it mays vary on the c
 
 As before you may want to stop the cluster properly and then stop everything else with the following commands.
 
+## 8a. Stop the DSE cluster properly
 ```bash
 kubectl -n cass-operator apply -f ./3-prometheus_grafana/dse/dse-mini-stop.yaml
+```
+
+## 8b. Delete resources associated
+
+```bash
 kubectl -n cass-operator delete -f ./3-prometheus_grafana/dse/dse-mini-stop.yaml
 ```
 
-## 8a. Delete the namespace and clean up the rest of the artifacts
+## 8c. Delete the namespace and clean up the rest of the artifacts
 ```bash
 kubectl delete ns cass-operator
+```
+
+## 8d. Delete the kub cluster
+```bash
+kind delete cluster  --name=kind-cassandra
 ```
 
 ## Congratulations, your are done.
