@@ -145,7 +145,7 @@ choco install kind
 
 ![osx](https://github.com/DataStax-Academy/kubernetes-workshop-online/blob/master/4-materials/images/mac32.png?raw=true) : To install on **MAC OS** please use the following [homebrew](https://docs.brew.sh/Installation) commands:
 ```bash
-brew install kubectl
+brew install kind
 ```
 
 ![linux](https://github.com/DataStax-Academy/kubernetes-workshop-online/blob/master/4-materials/images/linux32.png?raw=true) To install on linux (centOS) you can use the following commands
