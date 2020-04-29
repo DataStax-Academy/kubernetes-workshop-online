@@ -96,7 +96,15 @@ The Prometheus Operator makes the Prometheus configuration Kubernetes native and
 
 ```bash
 kubectl -n cass-operator create -f ./3-prometheus_grafana/prometheus/operator.yaml
+```
+
+📘 **3b. Install Service Monitor **
+```
 kubectl -n cass-operator apply -f ./3-prometheus_grafana/prometheus/service_monitor.yaml
+```
+
+📘 **3c. Install the instance of prometheus**
+```
 kubectl -n cass-operator apply -f ./3-prometheus_grafana/prometheus/instance.yaml
 ```
 
@@ -152,13 +160,20 @@ prometheus-operated                   ClusterIP   None            <none>        
 Note: In cloud based environment you may need to access dedicated URL and not port 3000 as we forwarded url to cope with security constraints.
 
 ```bash
-kubectl -n cass-operator port-forward service/grafana-service 3000:3000
-kubectl -n cass-operator port-forward service/prometheus-operated 9090:9090
+kubectl -n cass-operator port-forward service/grafana-service 3000:3000&
+```
+
+```bash
+kubectl -n cass-operator port-forward service/prometheus-operated 9090:9090&
 ```
 
 ## 5. Start DSE Cluster
 
 📘 **5a.Start the 3 DSE nodes clusters**
+
+This could be quite CPU consuming reduce the size of the cluster to `1` if you in the `dse-mini.yaml` if you are working on a machine more than 4 years old.
+
+
 ```bash
 kubectl -n cass-operator apply -f ./3-prometheus_grafana/dse/dse-mini.yaml
 ```
