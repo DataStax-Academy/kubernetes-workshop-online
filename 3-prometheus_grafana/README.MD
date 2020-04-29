@@ -98,7 +98,7 @@ The Prometheus Operator makes the Prometheus configuration Kubernetes native and
 kubectl -n cass-operator create -f ./3-prometheus_grafana/prometheus/operator.yaml
 ```
 
-📘 **3b. Install Service Monitor **
+📘 **3b. Install Service Monitor**
 ```
 kubectl -n cass-operator apply -f ./3-prometheus_grafana/prometheus/service_monitor.yaml
 ```
