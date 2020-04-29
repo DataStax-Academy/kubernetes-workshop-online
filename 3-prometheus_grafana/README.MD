@@ -48,13 +48,13 @@ OLM extends *Kubernetes* to provide a declarative way to install, manage, and up
 
 📘 **2a. Set env var `namespace`**
 ```bash
-$ export namespace=cass-operator
-$ echo $namespace
+export namespace=cass-operator
+echo $namespace
 ```
 
 📘 **2b.Install OLM**
 ```bash
-$ ./3-prometheus_grafana/install-olm.sh 0.14.1
+./3-prometheus_grafana/install-olm.sh 0.14.1
 ```
 📗 **Expected output**
 ```
