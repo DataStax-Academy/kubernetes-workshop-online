@@ -13,7 +13,7 @@ Feel free to bookmark this page for future reference!
 
 | Title  | Description
 |---|---|
-| **Slides** | [PRESENTATIONS](4-slides/presentation.pdf) |
+| **Slides** | [PRESENTATIONS](4-materials/presentation.pdf) |
 
 ## Exercises
 
