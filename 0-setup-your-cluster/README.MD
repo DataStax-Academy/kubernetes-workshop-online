@@ -93,7 +93,10 @@ The Kubernetes command-line tool, `kubectl`, allows you to run commands against 
 brew install kubectl
 ```
 
-![linux](https://github.com/DataStax-Academy/kubernetes-workshop-online/blob/master/4-materials/images/linux32.png?raw=true) To install on linux (centOS) you can use the following commands
+![linux](https://github.com/DataStax-Academy/kubernetes-workshop-online/blob/master/4-materials/images/linux32.png?raw=true) To install on linux (centOS) you can use the following commands. 
+
+*If the binary not working for your linux distribution you have more download urls in the [KUBETCTL DOCUMENTATION](https://kubernetes.io/docs/tasks/tools/install-kubectl/#install-kubectl-on-linux)*.
+
 ```bash
 # Download binary and move to /bin
 curl -LO "https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl"
@@ -308,5 +311,4 @@ standard (default)         rancher.io/local-path   Delete          WaitForFirstC
 ## Congratulations, your are done for this exercise.
 
 ![OK](https://github.com/DataStax-Academy/kubernetes-workshop-online/blob/master/4-materials/images/welldone.jpg?raw=true)
-
 
