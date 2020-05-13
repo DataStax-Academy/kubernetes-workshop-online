@@ -32,4 +32,4 @@ spec:
         targetPort: 3000
   deployment:
     nodeSelector:
-      hostname: kind-cassandra-worker5
+      kubernetes.io/hostname: kind-cassandra-worker5
