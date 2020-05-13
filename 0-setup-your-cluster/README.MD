@@ -5,6 +5,8 @@
 
 This guide will show you how to install a **Kubernetes** cluster on a single machine in order to later, deploy an Apache Cassandra™ database. It be composed of one *master* and multiple *workers*. 
 
+**IMPORTANT** If you are using our cloud test instance (like `wks78879.k8s-workshop.datastaxtraining.com`), please start with the Step 7!
+
 ## 1. Install Docker
 
 Docker is an open-source project that automates the deployment of software applications inside containers by providing an additional layer of abstraction and automation of OS-level virtualization on Linux.
