@@ -493,7 +493,7 @@ UN  10.244.1.3  91.34 KiB  1            76.9%             ee712d14-401d-4db6-b7c
 UN  10.244.2.3  114.89 KiB  1            17.4%             ae2fe508-dde0-43c2-ad14-42973e6c9821  default
 ```
 
-📘 **4f. Execute the command to login ton `cqlsh`**
+📘 **4f. Execute the command to login to `cqlsh`**
 ```bash
 cqlsh cluster1-dc1-service.cass-operator -u cluster1-superuser -p h5iMHm8RpoOfSXUXNiGT-WPfJa7tbwV9plj4ITYwHyghxJlQO2ySUQ
 ```
