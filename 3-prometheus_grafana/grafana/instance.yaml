@@ -23,3 +23,14 @@ spec:
           operator: In
           values:
             - grafana
+  service:
+    labels:
+      app: grafana
+    annotations:
+      app: grafana
+    type: NodePort
+    ports:
+      - name: grafana-proxy
+        port: 3000
+        protocol: TCP
+        targetPort: 3000
