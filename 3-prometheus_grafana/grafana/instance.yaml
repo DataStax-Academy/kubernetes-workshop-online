@@ -29,6 +29,8 @@ spec:
     annotations:
       app: grafana
     type: NodePort
+    nodeSelector:
+      hostname: kind-cassandra-worker5
     ports:
       - name: grafana-proxy
         port: 3000
