@@ -9,3 +9,7 @@ nodes:
 - role: worker
 - role: worker
 - role: worker
+  extraPortMappings:
+  - containerPort: 3000
+    hostPort: 3000
+    listenAddress: "0.0.0.0"
