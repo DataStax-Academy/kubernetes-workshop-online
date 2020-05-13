@@ -121,6 +121,21 @@ Events:
 
 The previous section created a new resource type in your Kubernetes cluster, the `CassandraDatacenter`. By adding `CassandraDatacenter` resources to your namespace, you can define a cluster topology for the operator to create and monitor.
 
+*Optionally* You can execute few commands to see what has also been created under the hood:
+```bash
+# List created services (2 expected metrics and webhook-service)
+kubectl -n cass-operator get svc
+
+# List of created Secrets (3 expected, 2 for operator)
+kubectl -n cass-operator get secret
+
+# Expected an empty list but no error the CRD cassandradatacenter now exist
+kubectl -n cass-operator get cassandradatacenter
+
+# Expected output 1 line
+kubectl -n cass-operator get configMap
+```
+
 ## 2. Create a single node cluster
 
 Apply this file via `kubectl` and watch the list of pods as the operator deploys them. Completing a deployment may take several minutes per node.
@@ -133,6 +148,7 @@ kubectl -n cass-operator apply -f ./1-cassandra/12-cassandra-cluster-1nodes.yaml
 ```bash
 watch kubectl -n cass-operator get pod
 ```
+
 📗 **Expected output**
 ```
 NAME                             READY   STATUS    RESTARTS   AGE
@@ -140,10 +156,19 @@ cass-operator-657cb5c695-q9psl   1/1     Running   0          5m22s
 cluster1-dc1-default-sts-0       1/2     Running   0          50s
 ```
 
+*Optionnally* you can also track the datacenter creation (not only) the pod with the following command in another shell. Note the `-w` flag allowing to partially mimic the `watch` mechanism.
+```
+kubectl -n cass-operator get -w cassdc cassandradatacenter -o yaml
+```
+
 📘 **2c. Execute the command to describe the datacenter**
 ```bash
 kubectl -n cass-operator describe cassdc dc1
 ```
+*Note than you can always use `cassdc` instead of the longer version `cassandradatacenter` in the command lines. In the following we may use one or the other.*
+
+The last part of the Yaml, the Events is what we are looking for, it tells us a lot about the creation process.
+
 📗 **Expected output**
 ```
 Name:         dc1
@@ -225,6 +250,20 @@ Cassandra is rack-aware, and the racks parameter will configure the operator to 
 **NodeCount**
 
 The size parameter is the number of nodes to run in the datacenter. For optimal performance, it's recommended to run only one server instance per Kubernetes worker node. The operator will enforce that limit, and pods may get stuck in the Pending status if there are insufficient Kubernetes workers available.
+
+*Optionally* To see what resources have been created in k8s you can run the following commands.
+```
+# List datacenters (dc1)
+kubectl -n cass-operator get cassandradatacenter
+# List statefulset (cluster1-dc1-sts)
+kubectl -n cass-operator get sts
+# List Services (3 services per dc all-pod, seed,and global)
+kubectl -n cass-operator get svc
+# List pods (our new Cassandra node)
+kubectl -n cass-operator get pods
+# List persistent volumes 1 per POD (server-data)
+kubectl -n cass-operator get persistentVolumes
+```
 
 ## 3. Browse your cluster
 
@@ -416,8 +455,9 @@ exit
 exit
 ```
 
-## 4 - Scale up the clusters
+## 4 - Scale up our cluster
 
+In the following chapter we will expand our cluster from 1 node to 3 nodes.
 
 📘 **4a. Compare files `12-cassandra-cluster-1nodes` and  `13-cassandra-cluster-3nodes`**
 ```bash
@@ -435,6 +475,7 @@ diff ./1-cassandra/12-cassandra-cluster-1nodes.yaml ./1-cassandra/13-cassandra-c
 ```bash
 kubectl -n cass-operator apply -f ./1-cassandra/13-cassandra-cluster-3nodes.yaml
 ```
+
 📘 **4c. Execute the following command to watch evolution of the cluster**
 We may need about 10 minutes to have all pods both started and ready.
 ```bash
@@ -471,6 +512,29 @@ cluster1-dc1-default-sts-1       2/2     Running   0          13m
 cluster1-dc1-default-sts-2       2/2     Running   0          13m
 ---
 ```
+
+As before you can also optionnaly see the evolution of the `cassandradatacenter` with the following describe command `kubectl -n cass-operator get -w cassdc dc1 -o yaml`
+
+It is a best practice to change the `yaml` file and then applying the new file. It allows to keep manifest and cluster in sync. Professional would notice we could also have enter the command `kubectl -n cass-operator patch cassandradatacenter/dc1 --patch '{"spec":{"size":3}}' --type merge`
+
+*Optionally* To see what resources have been created in k8s you can run the following commands.
+```bash
+# List datacenters (dnochange)
+kubectl -n cass-operator get cassandradatacenter
+# List statefulset (no change)
+kubectl -n cass-operator get sts
+# List Services (no changel)
+kubectl -n cass-operator get svc
+# List pods (our new Cassandra node)
+kubectl -n cass-operator get pods
+# List persistent volumes (1 per POD (server-data)
+kubectl -n cass-operator get persistentVolumes
+```
+*Optionally* To see what is inside a pod (to show the side car) you can run the following
+```bash
+kubectl -n cass-operator get pod cluster1-dc1-default-sts-1 -o yaml
+```
+
 
 📘 **4d. Execute the command to login to a pod with SSH**
 ```bash
