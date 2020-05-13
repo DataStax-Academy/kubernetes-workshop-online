@@ -156,18 +156,6 @@ grafana-service                       ClusterIP   10.96.240.129   <none>        
 prometheus-operated                   ClusterIP   None            <none>        9090/TCP            4m56s   operated-prometheus=true
 ```
 
-📘 **4f. Forward Ports**
-
-Note: In cloud based environment you may need to access dedicated URL and not port 3000 as we forwarded url to cope with security constraints.
-
-```bash
-kubectl -n cass-operator port-forward service/grafana-service 3000:3000&
-```
-
-```bash
-kubectl -n cass-operator port-forward service/prometheus-operated 9090:9090&
-```
-
 ## 5. Start DSE Cluster
 
 📘 **5a.Start the 3 DSE nodes clusters**
