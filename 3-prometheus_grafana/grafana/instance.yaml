@@ -24,15 +24,12 @@ spec:
           values:
             - grafana
   service:
-    labels:
-      app: grafana
-    annotations:
-      app: grafana
     type: NodePort
-    nodeSelector:
-      hostname: kind-cassandra-worker5
     ports:
       - name: grafana-proxy
         port: 3000
         protocol: TCP
         targetPort: 3000
+  deployment:
+    nodeSelector:
+      hostname: kind-cassandra-worker5
