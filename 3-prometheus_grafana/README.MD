@@ -161,11 +161,11 @@ prometheus-operated                   ClusterIP   None            <none>        
 Note: In cloud based environment you may need to access dedicated URL and not port 3000 as we forwarded url to cope with security constraints.
 
 ```bash
-kubectl -n cass-operator port-forward service/grafana-service 3000:3000&
+kubectl -n cass-operator port-forward --address 0.0.0.0 service/grafana-service 3000:3000&
 ```
 
 ```bash
-kubectl -n cass-operator port-forward service/prometheus-operated 9090:9090&
+kubectl -n cass-operator port-forward --address 0.0.0.0 service/prometheus-operated 9090:9090&
 ```
 
 ## 5. Start DSE Cluster
