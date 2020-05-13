@@ -513,7 +513,7 @@ cluster1-dc1-default-sts-2       2/2     Running   0          13m
 ---
 ```
 
-As before you can also optionnaly see the evolution of the `cassandradatacenter` with the following describe command `kubectl -n cass-operator get -w cassdc dc1 -o yaml`
+As before you can also optionally see the evolution of the `cassandradatacenter` with the following describe command `kubectl -n cass-operator get -w cassdc dc1 -o yaml`
 
 It is a best practice to change the `yaml` file and then applying the new file. It allows to keep manifest and cluster in sync. Professional would notice we could also have enter the command `kubectl -n cass-operator patch cassandradatacenter/dc1 --patch '{"spec":{"size":3}}' --type merge`
 
