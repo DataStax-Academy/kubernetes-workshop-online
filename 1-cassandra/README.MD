@@ -158,7 +158,7 @@ cluster1-dc1-default-sts-0       1/2     Running   0          50s
 
 *Optionnally* you can also track the datacenter creation (not only) the pod with the following command in another shell. Note the `-w` flag allowing to partially mimic the `watch` mechanism.
 ```
-kubectl -n cass-operator get -w cassdc cassandradatacenter -o yaml
+kubectl -n cass-operator get -w cassdc -o yaml
 ```
 
 📘 **2c. Execute the command to describe the datacenter**
