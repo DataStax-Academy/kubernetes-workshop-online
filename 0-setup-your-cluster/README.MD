@@ -308,7 +308,7 @@ kubectl -n cass-operator get storageClass
 📗 **Expected output**
 ```
 NAME                       PROVISIONER             RECLAIMPOLICY   VOLUMEBINDINGMODE      ALLOWVOLUMEEXPANSION   AGE
-workshop-cassandra-storage (default)   rancher.io/local-path   Delete          WaitForFirstConsumer   false                  31m
+server-storage (default)   rancher.io/local-path   Delete          WaitForFirstConsumer   false                  25m
 standard (default)         rancher.io/local-path   Delete          WaitForFirstConsumer   false                  88m
 ```
 
