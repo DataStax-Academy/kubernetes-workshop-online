@@ -175,7 +175,7 @@ No kind clusters found.
 
 ## 6. Create a KIND cluster
 
-During this workshop we will work with a cluster with multiple Cassandra nodes. As of now the Cassandra Operator needs a worker per node. We will create a Kubernetes cluster based on the [following configuration](0-setup-your-cluster/01-kind-config.yaml) **1 master, 5 workers** to be able to spawn some multi nodes clusters. This is also the reason why `kind` has been preferred as `minikube` another solution to run Kubernetes locally but handling only a managin a single worker.
+During this workshop we will work with a cluster with multiple Cassandra nodes. As of now the Cassandra Operator needs a worker per node. We will create a Kubernetes cluster based on the [following configuration](01-kind-config.yaml) **1 master, 5 workers** to be able to spawn some multi nodes clusters. This is also the reason why `kind` has been preferred as `minikube` another solution to run Kubernetes locally but handling only a managin a single worker.
 
 📘 **6a. Execute the following command to create a kubernetes cluster**
 ```bash
@@ -308,7 +308,7 @@ kubectl -n cass-operator get storageClass
 📗 **Expected output**
 ```
 NAME                       PROVISIONER             RECLAIMPOLICY   VOLUMEBINDINGMODE      ALLOWVOLUMEEXPANSION   AGE
-workshop-cassandra-storage (default)   rancher.io/local-path   Delete          WaitForFirstConsumer   false                  31m
+server-storage (default)   rancher.io/local-path   Delete          WaitForFirstConsumer   false                  25m
 standard (default)         rancher.io/local-path   Delete          WaitForFirstConsumer   false                  88m
 ```
 
