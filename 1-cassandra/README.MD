@@ -569,7 +569,7 @@ Use HELP for help.
 cluster1-superuser@cqlsh> 
 ```
 
-📘 **4g. Describe the keyspace `killvideo1`**
+📘 **4g. Describe the keyspace `killrvideo1`**
 ```sql
 describe keyspace killrvideo1;
 ```
@@ -624,12 +624,12 @@ CREATE TABLE killrvideo1.videos (
     AND speculative_retry = '99PERCENTILE';
 ```
 
-📘 **4h. Change the deplication factor of `killvideo1`**
+📘 **4h. Change the deplication factor of `killrvideo1`**
 ```sql
 alter keyspace killrvideo1 with replication={'class':'NetworkTopologyStrategy', 'dc1':3};
 ```
 
-📘 **4i. Describe the keyspace `killvideo1`**
+📘 **4i. Describe the keyspace `killrvideo1`**
 ```sql
 describe keyspace killrvideo1
 ```
